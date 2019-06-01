@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url]
 
 * Студент: [Михаил Карямин](https://up.htmlacademy.ru/javascript/17/user/959581).
-* Наставник: `Неизвестно`.
+* Наставник: [Андрей Вершинин](https://htmlacademy.ru/profile/id928707).
 
 ---
 
