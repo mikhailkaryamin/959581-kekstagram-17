@@ -86,11 +86,11 @@ var generateComments = function () {
 
 // Собираем массив лайков
 
-var likesPhotos = generateLikes(maxLikes, minLikes);
+var likesPhotos = generateLikes();
 
 // Собираем массив фото
 
-var urlsPhotos = generateLinksImgs(minURL, maxURL);
+var urlsPhotos = generateLinksImgs();
 
 // Собираем массив комментариев
 
