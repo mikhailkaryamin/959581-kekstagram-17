@@ -1,21 +1,22 @@
 'use strict';
-var NAMES = ['Иван', 'Хуан', 'Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
-var MESSAGES = [
-  'Всё отлично!',
-  'В целом всё неплохо. Но не всё.',
-  'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
-  'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
-  'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
-  'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
-];
-var AVATARS = [
-  'img/avatar-1.svg', 'img/avatar-2.svg', 'img/avatar-3.svg', 'img/avatar-4.svg', 'img/avatar-5.svg', 'img/avatar-6.svg'
-];
-
 // Получаем моки
+var descriptionTemplate = document.querySelector('#picture')
+.content
+.querySelector('.picture');
 
 var getMockData = function () {
-
+  var NAMES = ['Иван', 'Хуан', 'Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
+  var MESSAGES = [
+    'Всё отлично!',
+    'В целом всё неплохо. Но не всё.',
+    'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.',
+    'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.',
+    'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.',
+    'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!'
+  ];
+  var AVATARS = [
+    'img/avatar-1.svg', 'img/avatar-2.svg', 'img/avatar-3.svg', 'img/avatar-4.svg', 'img/avatar-5.svg', 'img/avatar-6.svg'
+  ];
   var MIN_URL = 1;
   var MAX_URL = 25;
 
@@ -30,7 +31,7 @@ var getMockData = function () {
 
   // Получаем случайный элемент массива
 
-  var getRandomArrayIndex = function (array) {
+  var getRandomElement = function (array) {
     var i = Math.floor(Math.random() * (array.length - 1));
     return array[i];
   };
@@ -53,9 +54,9 @@ var getMockData = function () {
   // Получаем данные комментария
 
   var generateCommentData = function (names, messages, avatars) {
-    var avatar = getRandomArrayIndex(avatars);
-    var message = getRandomArrayIndex(messages);
-    var name = getRandomArrayIndex(names);
+    var avatar = getRandomElement(avatars);
+    var message = getRandomElement(messages);
+    var name = getRandomElement(names);
     return {
       avatar: avatar,
       message: message,
@@ -112,10 +113,6 @@ var getMockData = function () {
 
 var renderDescription = function (mockDataPhotos) {
 
-  var descriptionTemplate = document.querySelector('#picture')
-  .content
-  .querySelector('.picture');
-
   var elementDescription = descriptionTemplate.cloneNode(true);
 
   elementDescription.querySelector('.picture__img').src = mockDataPhotos.url;
@@ -129,20 +126,24 @@ var renderDescription = function (mockDataPhotos) {
 
 var generateDescriptionList = function (descriptionPhotos) {
 
-  var similarListElement = document.querySelector('.pictures');
+  var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < descriptionPhotos.length; i++) {
-    var descriptionPhoto = renderDescription(descriptionPhotos[i]);
-    similarListElement.appendChild(descriptionPhoto);
+    fragment.appendChild(renderDescription(descriptionPhotos[i]));
   }
 
+  return fragment;
+};
+
+var insertDescriptionList = function () {
+  var similarListElement = document.querySelector('.pictures');
+
+  similarListElement.appendChild(descriptionPhotosList);
   return similarListElement;
 };
 
 var mockData = getMockData();
 var descriptionPhotosList = generateDescriptionList(mockData);
-var insertDescriptionList = function () {
-  return descriptionPhotosList;
-};
 
 insertDescriptionList(descriptionPhotosList);
+
