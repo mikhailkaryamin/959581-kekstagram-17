@@ -135,7 +135,7 @@ var generateDescriptionList = function (descriptionPhotos) {
   return fragment;
 };
 
-var insertDescriptionList = function () {
+var insertDescriptionList = function (descriptionPhotosList) {
   var similarListElement = document.querySelector('.pictures');
 
   similarListElement.appendChild(descriptionPhotosList);
