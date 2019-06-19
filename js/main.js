@@ -1,9 +1,6 @@
 'use strict';
-// Получаем моки
-var descriptionTemplate = document.querySelector('#picture')
-.content
-.querySelector('.picture');
 
+// Получаем моки
 var getMockData = function () {
   var NAMES = ['Иван', 'Хуан', 'Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
   var MESSAGES = [
@@ -21,7 +18,6 @@ var getMockData = function () {
   var MAX_URL = 25;
 
   // Получаем случайное число лайков
-
   var generateLikes = function () {
     var MIN_LIKES = 15;
     var MAX_LIKES = 200;
@@ -30,14 +26,12 @@ var getMockData = function () {
   };
 
   // Получаем случайный элемент массива
-
   var getRandomElement = function (array) {
     var i = Math.floor(Math.random() * (array.length - 1));
     return array[i];
   };
 
   // Получаем адрес картинки
-
   var generateLinksImgs = function () {
     var linkImg = [];
     for (var i = MIN_URL; i <= MAX_URL; i++) {
@@ -52,7 +46,6 @@ var getMockData = function () {
   };
 
   // Получаем данные комментария
-
   var generateCommentData = function (names, messages, avatars) {
     var avatar = getRandomElement(avatars);
     var message = getRandomElement(messages);
@@ -65,7 +58,6 @@ var getMockData = function () {
   };
 
   // Получаем список комментариев к фото
-
   var generateComments = function () {
     var commentsPhotos = [];
     for (var i = 0; i < MAX_URL; i++) {
@@ -81,7 +73,6 @@ var getMockData = function () {
   };
 
   // Получаем список описаний фотографий
-
   var generateDescriptionPhotos = function () {
     var descriptionPhotos = [];
 
@@ -98,11 +89,9 @@ var getMockData = function () {
 
 
   // Собираем массив фото
-
   var urlsPhotos = generateLinksImgs();
 
   // Собираем массив комментариев
-
   var commentsPhotosList = generateComments();
   var mockDataPhoto = generateDescriptionPhotos(urlsPhotos, commentsPhotosList);
 
@@ -110,10 +99,11 @@ var getMockData = function () {
 };
 
 // Создаем DOM фрагмент 'Описание фотографии'
-
-var renderDescription = function (mockDataPhotos) {
-
-  var elementDescription = descriptionTemplate.cloneNode(true);
+var renderDescriptionElement = function (mockDataPhotos) {
+  var descriptionTemplateElement = document.querySelector('#picture')
+  .content
+  .querySelector('.picture');
+  var elementDescription = descriptionTemplateElement.cloneNode(true);
 
   elementDescription.querySelector('.picture__img').src = mockDataPhotos.url;
   elementDescription.querySelector('.picture__likes').textContent = mockDataPhotos.likes;
@@ -123,13 +113,12 @@ var renderDescription = function (mockDataPhotos) {
 };
 
 // Вставляет фрагменты в DOM
-
 var generateDescriptionList = function (descriptionPhotos) {
 
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < descriptionPhotos.length; i++) {
-    fragment.appendChild(renderDescription(descriptionPhotos[i]));
+    fragment.appendChild(renderDescriptionElement(descriptionPhotos[i]));
   }
 
   return fragment;
@@ -142,8 +131,95 @@ var insertDescriptionList = function (descriptionPhotosList) {
   return similarListElement;
 };
 
-var mockData = getMockData();
-var descriptionPhotosList = generateDescriptionList(mockData);
+// Выводим фото на дисплей
+var displayPhotos = function () {
+  var mockData = getMockData();
+  var descriptionPhotosList = generateDescriptionList(mockData);
 
-insertDescriptionList(descriptionPhotosList);
+  insertDescriptionList(descriptionPhotosList);
+};
+
+// -------------------------------------------------------------
+
+var currentFilterClassName = '';
+var imgUploadElement = document.querySelector('.img-upload');
+var uploadFileElement = document.getElementById('upload-file');
+var formEditionElement = imgUploadElement.querySelector('.img-upload__overlay');
+var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
+
+// Загрузка изображения и редактирование изображения
+var editImage = function () {
+  var effectsListElement = document.querySelector('.effects__list');
+
+  // Накладываем эффекты на фото
+  var setEffectPreview = function (effect) {
+    var previewPhotoElement = imgUploadElement.querySelector('.img-upload__preview');
+    var imgPreviewElement = previewPhotoElement.querySelector('img');
+    var sliderElement = document.querySelector('.img-upload__effect-level');
+
+    if (currentFilterClassName) {
+      imgPreviewElement.classList.remove(currentFilterClassName);
+    }
+
+    if (effect !== 'none') {
+      sliderElement.classList.remove('hidden');
+      currentFilterClassName = 'effects__preview--' + effect;
+      imgPreviewElement.classList.add(currentFilterClassName);
+    } else {
+      sliderElement.classList.add('hidden');
+      currentFilterClassName = '';
+    }
+  };
+
+  effectsListElement.addEventListener('change', function (evt) {
+    var filterName = evt.target.value;
+
+    setEffectPreview(filterName);
+  });
+};
+
+// Загрузчик фотографий
+
+var onEditionEscPress = function (evt) {
+  var ESC_KEYCODE = 27;
+  var textAreaElement = document.querySelector('.text__description:focus');
+
+  if (evt.keyCode === ESC_KEYCODE && !textAreaElement) {
+    closeFormEdition();
+  }
+};
+
+var closeFormEdition = function () {
+  formEditionElement.classList.add('hidden');
+
+  uploadFileElement.value = '';
+};
+
+var openFormEdition = function () {
+  formEditionElement.classList.remove('hidden');
+  document.addEventListener('keydown', onEditionEscPress);
+};
+
+var resetFormEdition = function () {
+  var scaleControlElement = document.querySelector('.scale__control--value');
+  var levelLineElement = document.querySelector('.effect-level__line');
+  var levelPinElement = levelLineElement.querySelector('.effect-level__pin');
+  var levelDepthElement = levelLineElement.querySelector('.effect-level__depth');
+
+  levelPinElement.style.left = '100%';
+  levelDepthElement.style.width = '100%';
+  scaleControlElement.value = '100%';
+};
+
+displayPhotos();
+
+uploadFileElement.addEventListener('change', function () {
+  openFormEdition();
+  resetFormEdition();
+  editImage();
+
+  editionCloseElement.addEventListener('click', function () {
+    closeFormEdition();
+  });
+});
 
