@@ -1,6 +1,6 @@
 'use strict';
-// Получаем моки
 
+// Получаем моки
 var getMockData = function () {
   var NAMES = ['Иван', 'Хуан', 'Себастьян', 'Мария', 'Кристоф', 'Виктор', 'Юлия', 'Люпита', 'Вашингтон'];
   var MESSAGES = [
@@ -18,7 +18,6 @@ var getMockData = function () {
   var MAX_URL = 25;
 
   // Получаем случайное число лайков
-
   var generateLikes = function () {
     var MIN_LIKES = 15;
     var MAX_LIKES = 200;
@@ -27,14 +26,12 @@ var getMockData = function () {
   };
 
   // Получаем случайный элемент массива
-
   var getRandomElement = function (array) {
     var i = Math.floor(Math.random() * (array.length - 1));
     return array[i];
   };
 
   // Получаем адрес картинки
-
   var generateLinksImgs = function () {
     var linkImg = [];
     for (var i = MIN_URL; i <= MAX_URL; i++) {
@@ -49,7 +46,6 @@ var getMockData = function () {
   };
 
   // Получаем данные комментария
-
   var generateCommentData = function (names, messages, avatars) {
     var avatar = getRandomElement(avatars);
     var message = getRandomElement(messages);
@@ -62,7 +58,6 @@ var getMockData = function () {
   };
 
   // Получаем список комментариев к фото
-
   var generateComments = function () {
     var commentsPhotos = [];
     for (var i = 0; i < MAX_URL; i++) {
@@ -78,7 +73,6 @@ var getMockData = function () {
   };
 
   // Получаем список описаний фотографий
-
   var generateDescriptionPhotos = function () {
     var descriptionPhotos = [];
 
@@ -95,11 +89,9 @@ var getMockData = function () {
 
 
   // Собираем массив фото
-
   var urlsPhotos = generateLinksImgs();
 
   // Собираем массив комментариев
-
   var commentsPhotosList = generateComments();
   var mockDataPhoto = generateDescriptionPhotos(urlsPhotos, commentsPhotosList);
 
@@ -107,11 +99,11 @@ var getMockData = function () {
 };
 
 // Создаем DOM фрагмент 'Описание фотографии'
-var renderDescription = function (mockDataPhotos) {
-  var descriptionTemplate = document.querySelector('#picture')
+var renderDescriptionElement = function (mockDataPhotos) {
+  var descriptionTemplateElement = document.querySelector('#picture')
   .content
   .querySelector('.picture');
-  var elementDescription = descriptionTemplate.cloneNode(true);
+  var elementDescription = descriptionTemplateElement.cloneNode(true);
 
   elementDescription.querySelector('.picture__img').src = mockDataPhotos.url;
   elementDescription.querySelector('.picture__likes').textContent = mockDataPhotos.likes;
@@ -126,7 +118,7 @@ var generateDescriptionList = function (descriptionPhotos) {
   var fragment = document.createDocumentFragment();
 
   for (var i = 0; i < descriptionPhotos.length; i++) {
-    fragment.appendChild(renderDescription(descriptionPhotos[i]));
+    fragment.appendChild(renderDescriptionElement(descriptionPhotos[i]));
   }
 
   return fragment;
@@ -143,158 +135,91 @@ var insertDescriptionList = function (descriptionPhotosList) {
 var displayPhotos = function () {
   var mockData = getMockData();
   var descriptionPhotosList = generateDescriptionList(mockData);
+
   insertDescriptionList(descriptionPhotosList);
 };
 
+// -------------------------------------------------------------
+
+var currentFilterClassName = '';
+var imgUploadElement = document.querySelector('.img-upload');
+var uploadFileElement = document.getElementById('upload-file');
+var formEditionElement = imgUploadElement.querySelector('.img-upload__overlay');
+var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
+
 // Загрузка изображения и редактирование изображения
-var uploadAndEditionImage = function () {
-
-  var imgUpload = document.querySelector('.img-upload');
-  var uploadFile = document.getElementById('upload-file');
-  var formEdition = imgUpload.querySelector('.img-upload__overlay');
-  var editionClose = imgUpload.querySelector('.img-upload__cancel');
-  var effectsList = document.querySelector('.effects__list');
-
-  var onEditionEscPress = function (evt) {
-    var ESC_KEYCODE = 27;
-    if (evt.keyCode === ESC_KEYCODE) {
-      closeFormEdition();
-    }
-  };
-
-  var resetFormEdition = function () {
-    var scaleControl = document.querySelector('.scale__control--value');
-    var levelLine = document.querySelector('.effect-level__line');
-    var levelPin = levelLine.querySelector('.effect-level__pin');
-    var levelDepth = levelLine.querySelector('.effect-level__depth');
-
-    levelPin.style.left = '100%';
-    levelDepth.style.width = '100%';
-    scaleControl.value = '100%';
-  };
-
-  var openFormEdition = function () {
-    formEdition.classList.remove('hidden');
-    resetFormEdition();
-    document.addEventListener('keydown', onEditionEscPress);
-  };
-
-  var closeFormEdition = function () {
-    formEdition.classList.add('hidden');
-    uploadFile.value = '';
-  };
-
-  uploadFile.addEventListener('change', function () {
-    openFormEdition();
-  });
-
-  editionClose.addEventListener('click', function () {
-    closeFormEdition();
-  });
+var editImage = function () {
+  var effectsListElement = document.querySelector('.effects__list');
 
   // Накладываем эффекты на фото
-
-  effectsList.addEventListener('change', function (evt) {
-    var filterName = evt.target.value;
-
-    getEffectPreview(filterName);
-  });
-
-  var getEffectPreview = function (effect) {
-    var previewPhoto = imgUpload.querySelector('.img-upload__preview');
-    var currentFilterClassName = '';
-    var imgPreview = previewPhoto.querySelector('img');
-    var slider = document.querySelector('.img-upload__effect-level');
+  var setEffectPreview = function (effect) {
+    var previewPhotoElement = imgUploadElement.querySelector('.img-upload__preview');
+    var imgPreviewElement = previewPhotoElement.querySelector('img');
+    var sliderElement = document.querySelector('.img-upload__effect-level');
 
     if (currentFilterClassName) {
-      imgPreview.classList.remove(currentFilterClassName);
+      imgPreviewElement.classList.remove(currentFilterClassName);
     }
 
     if (effect !== 'none') {
-      slider.classList.remove('hidden');
+      sliderElement.classList.remove('hidden');
       currentFilterClassName = 'effects__preview--' + effect;
-      imgPreview.classList.add(currentFilterClassName);
+      imgPreviewElement.classList.add(currentFilterClassName);
     } else {
-      slider.classList.add('hidden');
+      sliderElement.classList.add('hidden');
       currentFilterClassName = '';
     }
   };
+
+  effectsListElement.addEventListener('change', function (evt) {
+    var filterName = evt.target.value;
+
+    setEffectPreview(filterName);
+  });
+};
+
+// Загрузчик фотографий
+
+var onEditionEscPress = function (evt) {
+  var ESC_KEYCODE = 27;
+  var textAreaElement = document.querySelector('.text__description:focus');
+
+  if (evt.keyCode === ESC_KEYCODE && !textAreaElement) {
+    closeFormEdition();
+  }
+};
+
+var closeFormEdition = function () {
+  formEditionElement.classList.add('hidden');
+
+  uploadFileElement.value = '';
+};
+
+var openFormEdition = function () {
+  formEditionElement.classList.remove('hidden');
+  document.addEventListener('keydown', onEditionEscPress);
+};
+
+var resetFormEdition = function () {
+  var scaleControlElement = document.querySelector('.scale__control--value');
+  var levelLineElement = document.querySelector('.effect-level__line');
+  var levelPinElement = levelLineElement.querySelector('.effect-level__pin');
+  var levelDepthElement = levelLineElement.querySelector('.effect-level__depth');
+
+  levelPinElement.style.left = '100%';
+  levelDepthElement.style.width = '100%';
+  scaleControlElement.value = '100%';
 };
 
 displayPhotos();
-uploadAndEditionImage();
-// var effectLevelPin = imgUpload.querySelector('.effect-level__pin');
-// var generateEffect = function () {
-//   var style = window.getComputedStyle(effectLevelPin);
-//   var left = parseInt((style.getPropertyValue('left')), 10);
-//   var obejctsEffects = {
-//     chrome: {
-//       minValue: 0,
-//       maxValue: 1
-//     },
 
-//     sepia: {
-//       minValue: 0,
-//       maxValue: 1
-//     },
+uploadFileElement.addEventListener('change', function () {
+  openFormEdition();
+  resetFormEdition();
+  editImage();
 
-//     marvin: {
-//       minValue: 0,
-//       maxValue: 100
-//     },
-
-//     phobos: {
-//       minValue: 0,
-//       maxValue: 3
-//     },
-
-//     heat: {
-//       minValue: 1,
-//       maxValue: 3
-//     }
-//   };
-//   if (checkedElement !== 'none') {
-//     var maxValue = obejctsEffects[checkedElement].maxValue;
-//     var minValue = obejctsEffects[checkedElement].minValue;
-//     var range = maxValue - minValue;
-//     var effectValue = range * left / 100 + minValue;
-//   }
-//   return effectValue;
-// };
-
-// var searchChecked = function () {
-//   var effectsList = document.querySelector('.effects__list');
-//   var elementEffect = effectsList.querySelector('input[type=radio]:checked');
-//   var elementValue = elementEffect.value;
-//   return elementValue;
-// };
-
-// var checkedElement = searchChecked();
-// var valueEffect = generateEffect();
-
-// var getEffectString = function (effect, value) {
-//   var effectString;
-//   switch (effect) {
-//     case 'chrome':
-//       effectString = 'grayscale(' + value + ')';
-//       break;
-//     case 'sepia':
-//       effectString = 'sepia(' + value + ')';
-//       break;
-//     case 'marvin':
-//       effectString = 'invert(' + value + ')';
-//       break;
-//     case 'phobos':
-//       effectString = 'blur(' + value + 'px)';
-//       break;
-//     case 'heat':
-//       effectString = 'brightness(' + value + ')';
-//       break;
-//     default:
-//       effectString = '';
-//       break;
-//   }
-//   return effectString;
-// };
-
+  editionCloseElement.addEventListener('click', function () {
+    closeFormEdition();
+  });
+});
 
