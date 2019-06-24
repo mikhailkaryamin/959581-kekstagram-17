@@ -140,46 +140,44 @@ var displayPhotos = function () {
 };
 
 // -------------------------------------------------------------
-
+var currentFilterName = 'none';
 var currentFilterClassName = '';
 var imgUploadElement = document.querySelector('.img-upload');
 var uploadFileElement = document.getElementById('upload-file');
 var formEditionElement = imgUploadElement.querySelector('.img-upload__overlay');
-var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
+var imgPreviewElement = imgUploadElement.querySelector('.img-upload__preview');
 
 // Загрузка изображения и редактирование изображения
 var editImage = function () {
   var effectsListElement = document.querySelector('.effects__list');
 
   // Накладываем эффекты на фото
-  var setEffectPreview = function (effect) {
-    var previewPhotoElement = imgUploadElement.querySelector('.img-upload__preview');
-    var imgPreviewElement = previewPhotoElement.querySelector('img');
+  var setEffectPreview = function (effectName) {
     var sliderElement = document.querySelector('.img-upload__effect-level');
 
     if (currentFilterClassName) {
       imgPreviewElement.classList.remove(currentFilterClassName);
     }
 
-    if (effect !== 'none') {
+    if (effectName !== 'none') {
       sliderElement.classList.remove('hidden');
-      currentFilterClassName = 'effects__preview--' + effect;
+      currentFilterClassName = 'effects__preview--' + effectName;
       imgPreviewElement.classList.add(currentFilterClassName);
     } else {
       sliderElement.classList.add('hidden');
       currentFilterClassName = '';
+      imgPreviewElement.style.filter = '';
     }
   };
 
   effectsListElement.addEventListener('change', function (evt) {
-    var filterName = evt.target.value;
-
-    setEffectPreview(filterName);
+    currentFilterName = evt.target.value;
+    setEffectPreview(currentFilterName);
   });
+
 };
 
 // Загрузчик фотографий
-
 var onEditionEscPress = function (evt) {
   var ESC_KEYCODE = 27;
   var textAreaElement = document.querySelector('.text__description:focus');
@@ -211,12 +209,153 @@ var resetFormEdition = function () {
   scaleControlElement.value = '100%';
 };
 
+// Расчет эффекта от положения пина
+var setEffect = function (value) {
+  var obejctsEffects = {
+    chrome: {
+      minValue: 0,
+      maxValue: 1
+    },
+
+    sepia: {
+      minValue: 0,
+      maxValue: 1
+    },
+
+    marvin: {
+      minValue: 0,
+      maxValue: 100
+    },
+
+    phobos: {
+      minValue: 0,
+      maxValue: 3
+    },
+
+    heat: {
+      minValue: 1,
+      maxValue: 3
+    }
+  };
+  if (currentFilterName !== 'none') {
+    var maxValue = obejctsEffects[currentFilterName].maxValue;
+    var minValue = obejctsEffects[currentFilterName].minValue;
+    var range = maxValue - minValue;
+    var effectValue = range * value / 100 + minValue;
+  }
+  return effectValue;
+};
+
+// Делаем строку эффекта
+var setStringEffect = function (levelEffect) {
+  var effectString;
+  switch (currentFilterName) {
+    case 'chrome':
+      effectString = 'grayscale(' + levelEffect + ')';
+      break;
+    case 'sepia':
+      effectString = 'sepia(' + levelEffect + ')';
+      break;
+    case 'marvin':
+      effectString = 'invert(' + levelEffect + '%)';
+      break;
+    case 'phobos':
+      effectString = 'blur(' + levelEffect + 'px)';
+      break;
+    case 'heat':
+      effectString = 'brightness(' + levelEffect + ')';
+      break;
+    default:
+      effectString = '';
+      break;
+  }
+  return effectString;
+};
+
+// Перемещние пина слайдера и изменение глубины эффекта
+(function () {
+  var sliderElem = imgUploadElement.querySelector('.effect-level__line');
+  var thumbElem = imgUploadElement.querySelector('.effect-level__pin');
+  var levelDepthElement = imgUploadElement.querySelector('.effect-level__depth');
+
+  thumbElem.addEventListener('mousedown', function (e) {
+    var thumbCoords = getCoords(thumbElem);
+    var shiftX = e.pageX - thumbCoords.left;
+
+    var getSizeElement = function (elem) {
+      var elemInfo = elem.getBoundingClientRect();
+      var sizeElem = elemInfo.width;
+      return sizeElem;
+    };
+
+    var sliderSizeElem = getSizeElement(sliderElem);
+
+    var sliderCoords = getCoords(sliderElem);
+    var onMouseMove = function (moveEvt) {
+      var newLeft = moveEvt.pageX - shiftX - sliderCoords.left;
+      if (newLeft < 0) {
+        newLeft = 0;
+      }
+      var rightEdge = sliderElem.offsetWidth;
+      if (newLeft > rightEdge) {
+        newLeft = rightEdge;
+      }
+
+      // Расчет положения пина
+      var left = Math.round(newLeft / sliderSizeElem * 100);
+      var percentLeft = left + '%';
+      thumbElem.style.left = percentLeft;
+      levelDepthElement.style.width = percentLeft;
+
+      // Вызов функции расчета эффекта и составление строки
+      var levelEffect = setEffect(left);
+      var stringLevelEffect = setStringEffect(levelEffect);
+
+      // Записываем строку в стайл
+      imgPreviewElement.style.filter = stringLevelEffect;
+
+      // Записываем значение в инпут
+      var levelEffectValue = document.querySelector('.effect-level__value');
+      levelEffectValue.value = left;
+    };
+
+    var onMouseUp = function () {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup', onMouseUp);
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+
+    document.addEventListener('mouseup', onMouseUp);
+
+    return false;
+  });
+
+  thumbElem.ondragstart = function () {
+    return false;
+  };
+
+  var getCoords = function (elem) {
+    var box = elem.getBoundingClientRect();
+
+    return {
+      top: box.top + pageYOffset,
+      left: box.left + pageXOffset
+    };
+
+  };
+})();
+
+// Выводит фото на дисплей
 displayPhotos();
 
+// Открытие попапа и формы редактирования фото
 uploadFileElement.addEventListener('change', function () {
   openFormEdition();
   resetFormEdition();
   editImage();
+
+  var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
 
   editionCloseElement.addEventListener('click', function () {
     closeFormEdition();
