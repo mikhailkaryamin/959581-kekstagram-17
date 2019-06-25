@@ -210,8 +210,8 @@ var resetFormEdition = function () {
 };
 
 // Расчет эффекта от положения пина
-var setEffect = function (value) {
-  var obejctsEffects = {
+var getEffectValue = function (value) {
+  var EFFECT_SETTINGS = {
     chrome: {
       minValue: 0,
       maxValue: 1
@@ -238,8 +238,8 @@ var setEffect = function (value) {
     }
   };
   if (currentFilterName !== 'none') {
-    var maxValue = obejctsEffects[currentFilterName].maxValue;
-    var minValue = obejctsEffects[currentFilterName].minValue;
+    var maxValue = EFFECT_SETTINGS[currentFilterName].maxValue;
+    var minValue = EFFECT_SETTINGS[currentFilterName].minValue;
     var range = maxValue - minValue;
     var effectValue = range * value / 100 + minValue;
   }
@@ -247,7 +247,7 @@ var setEffect = function (value) {
 };
 
 // Делаем строку эффекта
-var setStringEffect = function (levelEffect) {
+var getEffectString = function (levelEffect) {
   var effectString;
   switch (currentFilterName) {
     case 'chrome':
@@ -270,6 +270,19 @@ var setStringEffect = function (levelEffect) {
       break;
   }
   return effectString;
+};
+
+// Расчет эффекта и составление строки
+var setEffect = function (left) {
+  var levelEffect = getEffectValue(left);
+  var stringLevelEffect = getEffectString(levelEffect);
+
+  // Записываем строку в стайл
+  imgPreviewElement.style.filter = stringLevelEffect;
+
+  // Записываем значение в инпут
+  var levelEffectValue = document.querySelector('.effect-level__value');
+  levelEffectValue.value = left;
 };
 
 // Перемещние пина слайдера и изменение глубины эффекта
@@ -307,16 +320,8 @@ var setStringEffect = function (levelEffect) {
       thumbElem.style.left = percentLeft;
       levelDepthElement.style.width = percentLeft;
 
-      // Вызов функции расчета эффекта и составление строки
-      var levelEffect = setEffect(left);
-      var stringLevelEffect = setStringEffect(levelEffect);
-
-      // Записываем строку в стайл
-      imgPreviewElement.style.filter = stringLevelEffect;
-
-      // Записываем значение в инпут
-      var levelEffectValue = document.querySelector('.effect-level__value');
-      levelEffectValue.value = left;
+      // Вызываем применение эффекта
+      setEffect(left);
     };
 
     var onMouseUp = function () {
