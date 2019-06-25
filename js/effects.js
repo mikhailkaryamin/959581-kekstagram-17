@@ -24,7 +24,7 @@ var getEffectValue = function (value) {
     phobos: {
       minValue: 0,
       maxValue: 3
-    },
+    }
 
     heat: {
       minValue: 1,
