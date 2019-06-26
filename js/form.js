@@ -1,34 +1,32 @@
 'use strict';
 
-// -------------------------------------------------------------
-
-var imgUploadElement = document.querySelector('.img-upload');
-var uploadFileElement = document.getElementById('upload-file');
-var formEditionElement = imgUploadElement.querySelector('.img-upload__overlay');
-
-// Загрузчик фотографий
-var onEditionEscPress = function (evt) {
-  var ESC_KEYCODE = 27;
-  var textAreaElement = document.querySelector('.text__description:focus');
-
-  if (evt.keyCode === ESC_KEYCODE && !textAreaElement) {
-    closeFormEdition();
-  }
-};
-
-var closeFormEdition = function () {
-  formEditionElement.classList.add('hidden');
-
-  uploadFileElement.value = '';
-};
-
-var openFormEdition = function () {
-  formEditionElement.classList.remove('hidden');
-  document.addEventListener('keydown', onEditionEscPress);
-};
-
 // Перемещние пина слайдера и изменение глубины эффекта
 (function () {
+  var imgUploadElement = document.querySelector('.img-upload');
+  var uploadFileElement = document.getElementById('upload-file');
+  var formEditionElement = imgUploadElement.querySelector('.img-upload__overlay');
+
+  // Загрузчик фотографий
+  var onEditionEscPress = function (evt) {
+    var ESC_KEYCODE = 27;
+    var textAreaElement = document.querySelector('.text__description:focus');
+
+    if (evt.keyCode === ESC_KEYCODE && !textAreaElement) {
+      closeFormEdition();
+    }
+  };
+
+  var closeFormEdition = function () {
+    formEditionElement.classList.add('hidden');
+
+    uploadFileElement.value = '';
+  };
+
+  var openFormEdition = function () {
+    formEditionElement.classList.remove('hidden');
+    document.addEventListener('keydown', onEditionEscPress);
+  };
+
   var sliderElem = imgUploadElement.querySelector('.effect-level__line');
   var thumbElem = imgUploadElement.querySelector('.effect-level__pin');
   var levelDepthElement = imgUploadElement.querySelector('.effect-level__depth');
@@ -91,17 +89,17 @@ var openFormEdition = function () {
     };
 
   };
-})();
 
-// Открытие попапа и формы редактирования фото
-uploadFileElement.addEventListener('change', function () {
-  openFormEdition();
-  window.effects.resetFormEdition();
-  window.effects.editImage();
+  // Открытие попапа и формы редактирования фото
+  uploadFileElement.addEventListener('change', function () {
+    openFormEdition();
+    window.effects.resetFormEdition();
+    window.effects.editImage();
 
-  var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
+    var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
 
-  editionCloseElement.addEventListener('click', function () {
-    closeFormEdition();
+    editionCloseElement.addEventListener('click', function () {
+      closeFormEdition();
+    });
   });
-});
+})();
