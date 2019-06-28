@@ -1402,6 +1402,17 @@ main {
           transform: translateX(-50%);
 }
 
+.errorHadler
+{
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin: 0 auto;
+  text-align: center;
+  background-color: red;
+  font-size: '30px';
+}
 
 /* Адаптивности чуток
    ========================================================================== */

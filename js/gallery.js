@@ -17,32 +17,25 @@
 
   // Вставляет фрагменты в DOM
   var generateDescriptionList = function (descriptionPhotos) {
-
     var fragment = document.createDocumentFragment();
+    var similarListElement = document.querySelector('.pictures');
 
     for (var i = 0; i < descriptionPhotos.length; i++) {
       fragment.appendChild(renderDescriptionElement(descriptionPhotos[i]));
     }
 
-    return fragment;
+    similarListElement.appendChild(fragment);
   };
 
-  var insertDescriptionList = function (descriptionPhotosList) {
-    var similarListElement = document.querySelector('.pictures');
-
-    similarListElement.appendChild(descriptionPhotosList);
-    return similarListElement;
+  var errorHandler = function (errorMessage) {
+    var node = document.createElement('div');
+    node.classList.add('errorHadler');
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
   };
 
   // Выводим фото на дисплей
-  var displayPhotos = function () {
-    var mockData = window.data.getMockData();
-    var descriptionPhotosList = generateDescriptionList(mockData);
+  window.backend.load(generateDescriptionList, errorHandler);
 
-    insertDescriptionList(descriptionPhotosList);
-  };
-
-  // Выводит фото на дисплей
-  displayPhotos();
 })();
 
