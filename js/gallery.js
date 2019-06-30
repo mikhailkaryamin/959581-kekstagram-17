@@ -31,7 +31,7 @@
   // Сообщение об ошибке
   var errorHandler = function (errorMessage) {
     var node = document.createElement('div');
-    node.classList.add('pictures__error-hadler');
+    node.classList.add('error-hadler');
     node.textContent = errorMessage;
     document.body.insertAdjacentElement('afterbegin', node);
   };
