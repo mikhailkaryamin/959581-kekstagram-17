@@ -290,6 +290,17 @@ main {
   background-position: -5px -31px;
 }
 
+.pictures__error-hadler
+{
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  margin: 0 auto;
+  text-align: center;
+  background-color: red;
+  font-size: '30px';
+}
 
 /* Поле для загрузки нового изображения
    ========================================================================== */
@@ -1400,18 +1411,6 @@ main {
   -webkit-transform: translateX(-50%);
       -ms-transform: translateX(-50%);
           transform: translateX(-50%);
-}
-
-.errorHadler
-{
-  position: absolute;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  margin: 0 auto;
-  text-align: center;
-  background-color: red;
-  font-size: '30px';
 }
 
 /* Адаптивности чуток

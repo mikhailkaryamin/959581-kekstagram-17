@@ -31,7 +31,7 @@
   // Сообщение об ошибке
   var errorHandler = function (errorMessage) {
     var node = document.createElement('div');
-    node.classList.add('errorHadler');
+    node.classList.add('pictures__error-hadler');
     node.textContent = errorMessage;
     document.body.insertAdjacentElement('afterbegin', node);
   };
@@ -54,11 +54,11 @@
   var resetActiveClass = function () {
     var header = document.querySelector('.img-filters__form');
     var btns = header.querySelectorAll('button');
-    var buttonTest = 'img-filters__button';
+    var buttonElement = 'img-filters__button';
     var buttonActive = 'img-filters__button  img-filters__button--active';
 
     btns.forEach(function (button) {
-      button.className = buttonTest;
+      button.className = buttonElement;
       button.addEventListener('click', function (evt) {
         if (button !== buttonActive) {
           evt.target.classList.add('img-filters__button--active');
@@ -72,25 +72,39 @@
   var filterCommentsElement = document.getElementById('filter-discussed');
   var filterPopularElement = document.getElementById('filter-popular');
 
+  var renderFilteredPopular = function () {
+    generateDescriptionList(photos);
+  };
+
+  var renderFilteredNew = function () {
+    window.filters.filteredNew(photos, generateDescriptionList);
+  };
+
+  var renderFilteredComments = function () {
+    window.filters.filteredComments(photos, generateDescriptionList);
+  };
+
+  filterPopularElement.addEventListener('click', function () {
+    resetActiveClass();
+    resetPicturesDOM();
+    window.debounce.delay(renderFilteredPopular);
+  });
+
   filterNewElement.addEventListener('click', function () {
     resetActiveClass();
     resetPicturesDOM();
-    window.filters.filteredNew(photos, generateDescriptionList);
+    window.debounce.delay(renderFilteredNew);
   });
 
   filterCommentsElement.addEventListener('click', function () {
     resetActiveClass();
     resetPicturesDOM();
-    window.filters.filteredComments(photos, generateDescriptionList);
-  });
-
-  filterPopularElement.addEventListener('click', function () {
-    resetActiveClass();
-    resetPicturesDOM();
-    generateDescriptionList(photos);
+    window.debounce.delay(renderFilteredComments);
   });
 
   window.backend.load(successHandler, errorHandler);
   document.querySelector('.img-filters').classList.remove('img-filters--inactive');
+
+  resetActiveClass();
 })();
 

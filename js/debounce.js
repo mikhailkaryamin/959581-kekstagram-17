@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var DEBOUNCE_INTERVAL = 5000; // ms
+  var DEBOUNCE_INTERVAL = 500; // ms
 
   var lastTimeout;
   var delay = function (cb) {
