@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   // Фильтр по новым фотографиям
-  var filteredNew = function (data, displayPhotos) {
+  var filteredNew = function (data) {
     var counterNewPhotos = 10;
     var newPhotos = data.slice();
     var filteredPhotos = [];
@@ -13,28 +13,28 @@
       newPhotos.splice(i, 1);
     }
 
-    displayPhotos(filteredPhotos);
+    return filteredPhotos;
   };
 
   // Фильтр по комментариям
-  var filteredComments = function (data, displayPhotos) {
+  var filteredComments = function (data) {
     var newPhotos = data.slice();
 
     var commentsPhotos = newPhotos.sort(function (first, second) {
-      if (first.comments.length > second.comments.length) {
-        return -1;
-      } else if (first.comments.length < second.comments.length) {
-        return 1;
-      } else {
-        return 0;
-      }
+      return second.comments.length - first.comments.length;
     });
 
-    displayPhotos(commentsPhotos);
+    return commentsPhotos;
+  };
+
+  // Фильтр по популярности
+  var filteredPopular = function (data) {
+    return data;
   };
 
   window.filters = {
     filteredNew: filteredNew,
-    filteredComments: filteredComments
+    filteredComments: filteredComments,
+    filteredPopular: filteredPopular
   };
 })();

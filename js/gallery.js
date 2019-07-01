@@ -3,6 +3,8 @@
 // Создаем DOM фрагмент 'Описание фотографии'
 (function () {
   var photos = []; // Сохраним загруженные данные
+  var buttonsFormElement = document.querySelector('.img-filters__form');
+
   var renderDescriptionElement = function (dataPhotos) {
     var descriptionTemplateElement = document.querySelector('#picture')
     .content
@@ -17,7 +19,7 @@
   };
 
   // Вставляет фрагменты в DOM
-  var generateDescriptionList = function (descriptionPhotos) {
+  var addPictureList = function (descriptionPhotos) {
     var fragment = document.createDocumentFragment();
     var similarListElement = document.querySelector('.pictures');
 
@@ -36,75 +38,59 @@
     document.body.insertAdjacentElement('afterbegin', node);
   };
 
+  var updateButtonsClass = function (activeButton) {
+    var buttonElements = buttonsFormElement.querySelectorAll('.img-filters__button');
+
+    buttonElements.forEach(function (buttonEl) {
+      buttonEl.classList.remove('img-filters__button--active');
+    });
+
+    activeButton.classList.add('img-filters__button--active');
+  };
+
+  var updatePicturesList = function (filteredPictures) {
+    resetPicturesDOM();
+    addPictureList(filteredPictures);
+  };
+
+  var debounceUpdatePicturesList = window.debounce(updatePicturesList);
+
+  var onFilterButtonClick = function (evt) {
+    var isTypeButton = evt.target.type === 'button';
+    var isActiveButton = evt.target.classList.contains('img-filters__button--active');
+    var IdButtonToFilter = {
+      'filter-popular': 'filteredPopular',
+      'filter-new': 'filteredNew',
+      'filter-discussed': 'filteredComments'
+    };
+
+    if (!isTypeButton || isActiveButton) {
+      return;
+    }
+
+    updateButtonsClass(evt.target);
+    var filterFunctionName = IdButtonToFilter[evt.target.id];
+    var filteredPictures = window.filters[filterFunctionName](photos);
+
+    debounceUpdatePicturesList(filteredPictures);
+  };
+
   var successHandler = function (data) {
     photos = data;
-    generateDescriptionList(data);
+    addPictureList(data);
+    document.querySelector('.img-filters').classList.remove('img-filters--inactive');
+    buttonsFormElement.addEventListener('click', onFilterButtonClick);
   };
 
   // Сбрасывает ДОМ
   var resetPicturesDOM = function () {
-    var allPicture = document.querySelector('.pictures');
     var picture = document.querySelectorAll('.picture');
-    for (var i = 0; i < picture.length; i++) {
-      allPicture.removeChild(picture[i]);
-    }
-  };
-
-  // Сбрасываем класс актив при переключении
-  var resetActiveClass = function () {
-    var header = document.querySelector('.img-filters__form');
-    var btns = header.querySelectorAll('button');
-    var buttonElement = 'img-filters__button';
-    var buttonActive = 'img-filters__button  img-filters__button--active';
-
-    btns.forEach(function (button) {
-      button.className = buttonElement;
-      button.addEventListener('click', function (evt) {
-        if (button !== buttonActive) {
-          evt.target.classList.add('img-filters__button--active');
-        }
-      });
+    picture.forEach(function (el) {
+      el.remove();
     });
   };
 
-  // Выводим фото на дисплей
-  var filterNewElement = document.getElementById('filter-new');
-  var filterCommentsElement = document.getElementById('filter-discussed');
-  var filterPopularElement = document.getElementById('filter-popular');
-
-  var renderFilteredPopular = function () {
-    generateDescriptionList(photos);
-  };
-
-  var renderFilteredNew = function () {
-    window.filters.filteredNew(photos, generateDescriptionList);
-  };
-
-  var renderFilteredComments = function () {
-    window.filters.filteredComments(photos, generateDescriptionList);
-  };
-
-  filterPopularElement.addEventListener('click', function () {
-    resetActiveClass();
-    resetPicturesDOM();
-    window.debounce.delay(renderFilteredPopular);
-  });
-
-  filterNewElement.addEventListener('click', function () {
-    resetActiveClass();
-    resetPicturesDOM();
-    window.debounce.delay(renderFilteredNew);
-  });
-
-  filterCommentsElement.addEventListener('click', function () {
-    resetActiveClass();
-    resetPicturesDOM();
-    window.debounce.delay(renderFilteredComments);
-  });
-
   window.backend.load(successHandler, errorHandler);
-  document.querySelector('.img-filters').classList.remove('img-filters--inactive');
 
-  resetActiveClass();
 })();
 
