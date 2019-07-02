@@ -33,7 +33,7 @@
   // Сообщение об ошибке
   var errorHandler = function (errorMessage) {
     var node = document.createElement('div');
-    node.classList.add('error-hadler');
+    node.classList.add('error-message');
     node.textContent = errorMessage;
     document.body.insertAdjacentElement('afterbegin', node);
   };
@@ -49,7 +49,7 @@
   };
 
   var updatePicturesList = function (filteredPictures) {
-    resetPicturesDOM();
+    clearPicturesList();
     addPictureList(filteredPictures);
   };
 
@@ -83,7 +83,7 @@
   };
 
   // Сбрасывает ДОМ
-  var resetPicturesDOM = function () {
+  var clearPicturesList = function () {
     var picture = document.querySelectorAll('.picture');
     picture.forEach(function (el) {
       el.remove();
