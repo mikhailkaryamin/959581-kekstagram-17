@@ -5,11 +5,11 @@
   var photos = []; // Сохраним загруженные данные
   var buttonsFormElement = document.querySelector('.img-filters__form');
 
-  var renderDescriptionElement = function (dataPhotos) {
-    var descriptionTemplateElement = document.querySelector('#picture')
+  var renderPhotoElement = function (dataPhotos) {
+    var pictureElement = document.querySelector('#picture')
     .content
     .querySelector('.picture');
-    var elementDescription = descriptionTemplateElement.cloneNode(true);
+    var elementDescription = pictureElement.cloneNode(true);
 
     elementDescription.querySelector('.picture__img').src = dataPhotos.url;
     elementDescription.querySelector('.picture__likes').textContent = dataPhotos.likes;
@@ -24,14 +24,14 @@
     var similarListElement = document.querySelector('.pictures');
 
     for (var i = 0; i < descriptionPhotos.length; i++) {
-      fragment.appendChild(renderDescriptionElement(descriptionPhotos[i]));
+      fragment.appendChild(renderPhotoElement(descriptionPhotos[i]));
     }
 
     similarListElement.appendChild(fragment);
   };
 
   // Сообщение об ошибке
-  var errorHandler = function (errorMessage) {
+  var onLoadError = function (errorMessage) {
     var node = document.createElement('div');
     node.classList.add('error-message');
     node.textContent = errorMessage;
@@ -59,9 +59,9 @@
     var isTypeButton = evt.target.type === 'button';
     var isActiveButton = evt.target.classList.contains('img-filters__button--active');
     var IdButtonToFilter = {
-      'filter-popular': 'filteredPopular',
-      'filter-new': 'filteredNew',
-      'filter-discussed': 'filteredComments'
+      'filter-popular': 'filterPopular',
+      'filter-new': 'filterNew',
+      'filter-discussed': 'filterComments'
     };
 
     if (!isTypeButton || isActiveButton) {
@@ -75,7 +75,7 @@
     debounceUpdatePicturesList(filteredPictures);
   };
 
-  var successHandler = function (data) {
+  var onLoadSuccess = function (data) {
     photos = data;
     addPictureList(data);
     document.querySelector('.img-filters').classList.remove('img-filters--inactive');
@@ -90,7 +90,7 @@
     });
   };
 
-  window.backend.load(successHandler, errorHandler);
+  window.backend.load(onLoadSuccess, onLoadError);
 
 })();
 

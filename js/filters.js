@@ -1,7 +1,7 @@
 'use strict';
 (function () {
   // Фильтр по новым фотографиям
-  var filteredNew = function (data) {
+  var filterNew = function (data) {
     var counterNewPhotos = 10;
     var newPhotos = data.slice();
     var filteredPhotos = [];
@@ -17,7 +17,7 @@
   };
 
   // Фильтр по комментариям
-  var filteredComments = function (data) {
+  var filterComments = function (data) {
     var newPhotos = data.slice();
 
     var commentsPhotos = newPhotos.sort(function (first, second) {
@@ -28,13 +28,13 @@
   };
 
   // Фильтр по популярности
-  var filteredPopular = function (data) {
+  var filterPopular = function (data) {
     return data;
   };
 
   window.filters = {
-    filteredNew: filteredNew,
-    filteredComments: filteredComments,
-    filteredPopular: filteredPopular
+    filterNew: filterNew,
+    filterComments: filterComments,
+    filterPopular: filterPopular
   };
 })();
