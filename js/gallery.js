@@ -58,7 +58,7 @@
   var onFilterButtonClick = function (evt) {
     var isTypeButton = evt.target.type === 'button';
     var isActiveButton = evt.target.classList.contains('img-filters__button--active');
-    var IdButtonToFilter = {
+    var ButtonIdToFIlterName = {
       'filter-popular': 'filterPopular',
       'filter-new': 'filterNew',
       'filter-discussed': 'filterComments'
@@ -69,7 +69,7 @@
     }
 
     updateButtonsClass(evt.target);
-    var filterFunctionName = IdButtonToFilter[evt.target.id];
+    var filterFunctionName = ButtonIdToFIlterName[evt.target.id];
     var filteredPictures = window.filters[filterFunctionName](photos);
 
     debounceUpdatePicturesList(filteredPictures);
@@ -84,8 +84,8 @@
 
   // Сбрасывает ДОМ
   var clearPicturesList = function () {
-    var picture = document.querySelectorAll('.picture');
-    picture.forEach(function (el) {
+    var pictures = document.querySelectorAll('.picture');
+    pictures.forEach(function (el) {
       el.remove();
     });
   };
