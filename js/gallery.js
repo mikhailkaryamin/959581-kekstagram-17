@@ -80,6 +80,7 @@
     addPictureList(data);
     document.querySelector('.img-filters').classList.remove('img-filters--inactive');
     buttonsFormElement.addEventListener('click', onFilterButtonClick);
+    window.bigPicture.showBigPicture(photos);
   };
 
   // Сбрасывает ДОМ
