@@ -2,8 +2,6 @@
 
 (function () {
   var bigPictureElement = document.querySelector('.big-picture');
-  var bigPictureCloseElement = bigPictureElement.querySelector('.big-picture__cancel');
-  var picturesElement = document.querySelector('.pictures');
 
   // Создаем комментарий
   var createComment = function (comment) {
@@ -55,14 +53,6 @@
     insertCommentsList();
   };
 
-  var onFormEscPress = function (evt) {
-    window.util.isEscEvent(evt, closeBigPictureForm);
-  };
-
-  var closeBigPictureForm = function () {
-    bigPictureElement.classList.add('hidden');
-  };
-
   // Открытие формы
   var openBigPictureForm = function () {
     var commentCountElement = bigPictureElement.querySelector('.social__comment-count');
@@ -73,33 +63,10 @@
     commentLoaderElement.classList.add('hidden');
   };
 
-  var searchIndexPicture = function (evt, pictures) {
-    var currentPicture = evt.target.attributes.src.nodeValue;
-
-    // Ищем индекс фото
-    var pictureIndex = pictures.map(function (e) {
-      return e.url;
-    }).indexOf(currentPicture);
-
-    return pictureIndex;
-  };
-  // Обработчик события(открытие окна)
+  // Форма с ее содержимым
   var showBigPicture = function (data) {
-
-    picturesElement.addEventListener('click', function (evt) {
-      var indexPicture = searchIndexPicture(evt, data);
-
-      openBigPictureForm();
-
-      displayBigPicture(data[indexPicture]);
-
-
-      bigPictureCloseElement.addEventListener('click', function () {
-        bigPictureElement.classList.add('hidden');
-      });
-
-      document.addEventListener('keydown', onFormEscPress);
-    });
+    openBigPictureForm();
+    displayBigPicture(data);
   };
 
   window.bigPicture = {

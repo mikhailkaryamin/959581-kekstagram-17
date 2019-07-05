@@ -4,6 +4,8 @@
 (function () {
   var photos = []; // Сохраним загруженные данные
   var buttonsFormElement = document.querySelector('.img-filters__form');
+  var picturesElement = document.querySelector('.pictures');
+  var bigPictureElement = document.querySelector('.big-picture');
 
   var renderPhotoElement = function (dataPhotos) {
     var pictureElement = document.querySelector('#picture')
@@ -21,13 +23,13 @@
   // Вставляет фрагменты в DOM
   var addPictureList = function (descriptionPhotos) {
     var fragment = document.createDocumentFragment();
-    var similarListElement = document.querySelector('.pictures');
+
 
     for (var i = 0; i < descriptionPhotos.length; i++) {
       fragment.appendChild(renderPhotoElement(descriptionPhotos[i]));
     }
 
-    similarListElement.appendChild(fragment);
+    picturesElement.appendChild(fragment);
   };
 
   // Сообщение об ошибке
@@ -80,7 +82,6 @@
     addPictureList(data);
     document.querySelector('.img-filters').classList.remove('img-filters--inactive');
     buttonsFormElement.addEventListener('click', onFilterButtonClick);
-    window.bigPicture.showBigPicture(photos);
   };
 
   // Сбрасывает ДОМ
@@ -90,6 +91,53 @@
       el.remove();
     });
   };
+
+  // Ищем индекс фото
+  var searchIndexPicture = function (evt, pictures) {
+    var pictureUrl = evt.target.attributes.src.nodeValue;
+
+    var pictureIndex = pictures.map(function (e) {
+      return e.url;
+    }).indexOf(pictureUrl);
+
+    return pictureIndex;
+  };
+
+  // Ищем нужную фотографию по клику
+  var selectedPicture = function (evt) {
+    var indexPicture = searchIndexPicture(evt, photos);
+
+    window.bigPicture.showBigPicture(photos[indexPicture]);
+  };
+
+  // Закрытие по ESC
+  var onFormEscPress = function (evt) {
+    window.util.isEscEvent(evt, closeBigPictureForm);
+  };
+
+  var closeBigPictureForm = function () {
+    bigPictureElement.classList.add('hidden');
+
+    document.removeEventListener('click', onBigFormPicture);
+    document.removeEventListener('click', closeBigPictureForm);
+  };
+
+  // Обработчик открытия формы изображения
+  var onBigFormPicture = function (evt) {
+    var bigPictureCloseElement = bigPictureElement.querySelector('.big-picture__cancel');
+    var isClassPicture = evt.target.className === 'picture__img';
+
+    if (!isClassPicture) {
+      return;
+    }
+
+    selectedPicture(evt);
+
+    bigPictureCloseElement.addEventListener('click', closeBigPictureForm);
+    document.addEventListener('keydown', onFormEscPress);
+  };
+
+  picturesElement.addEventListener('click', onBigFormPicture);
 
   window.backend.load(onLoadSuccess, onLoadError);
 
