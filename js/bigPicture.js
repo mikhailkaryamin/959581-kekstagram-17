@@ -30,27 +30,21 @@
     var likesCountElement = bigPictureElement.querySelector('.likes-count');
     var commentsCountElement = bigPictureElement.querySelector('.comments-count');
     var socialCaption = bigPictureElement.querySelector('.social__caption');
+    var fragment = document.createDocumentFragment();
+    var similarListElement = document.querySelector('.social__comments');
 
-    // Вставляем комментарии
-    var insertCommentsList = function () {
-      var fragment = document.createDocumentFragment();
-      var similarListElement = document.querySelector('.social__comments');
+    comments.forEach(function (comment) {
+      fragment.appendChild(createComment(comment));
+    });
 
-      comments.forEach(function (comment) {
-        fragment.appendChild(createComment(comment));
-      });
+    clearCommentsList();
 
-      clearCommentsList();
+    similarListElement.appendChild(fragment);
 
-      similarListElement.appendChild(fragment);
-
-      pictureImgSrcElement.src = dataPhoto.url;
-      likesCountElement.textContent = dataPhoto.likes;
-      commentsCountElement.textContent = dataPhoto.comments.length;
-      socialCaption.textContent = dataPhoto.description;
-    };
-
-    insertCommentsList();
+    pictureImgSrcElement.src = dataPhoto.url;
+    likesCountElement.textContent = dataPhoto.likes;
+    commentsCountElement.textContent = dataPhoto.comments.length;
+    socialCaption.textContent = dataPhoto.description;
   };
 
   // Открытие формы
@@ -63,10 +57,27 @@
     commentLoaderElement.classList.add('hidden');
   };
 
+  // Закрытие по ESC
+  var onFormEscPress = function (evt) {
+    window.util.isEscEvent(evt, closeBigPictureForm);
+  };
+
+  // Обработчик закрытия
+  var closeBigPictureForm = function () {
+    bigPictureElement.classList.add('hidden');
+
+    document.removeEventListener('click', closeBigPictureForm);
+  };
+
   // Форма с ее содержимым
   var showBigPicture = function (data) {
-    openBigPictureForm();
+    var bigPictureCloseElement = bigPictureElement.querySelector('.big-picture__cancel');
+
     displayBigPicture(data);
+    openBigPictureForm();
+
+    bigPictureCloseElement.addEventListener('click', closeBigPictureForm);
+    document.addEventListener('keydown', onFormEscPress);
   };
 
   window.bigPicture = {

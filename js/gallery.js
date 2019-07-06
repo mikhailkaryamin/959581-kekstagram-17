@@ -5,7 +5,6 @@
   var photos = []; // Сохраним загруженные данные
   var buttonsFormElement = document.querySelector('.img-filters__form');
   var picturesElement = document.querySelector('.pictures');
-  var bigPictureElement = document.querySelector('.big-picture');
 
   var renderPhotoElement = function (dataPhotos) {
     var pictureElement = document.querySelector('#picture')
@@ -81,7 +80,9 @@
     photos = data;
     addPictureList(data);
     document.querySelector('.img-filters').classList.remove('img-filters--inactive');
+
     buttonsFormElement.addEventListener('click', onFilterButtonClick);
+    picturesElement.addEventListener('click', onPicturesClick);
   };
 
   // Сбрасывает ДОМ
@@ -93,51 +94,29 @@
   };
 
   // Ищем индекс фото
-  var searchIndexPicture = function (evt, pictures) {
-    var pictureUrl = evt.target.attributes.src.nodeValue;
-
-    var pictureIndex = pictures.map(function (e) {
+  var getImageData = function (imageSrc) {
+    var pictureIndex = photos.map(function (e) {
       return e.url;
-    }).indexOf(pictureUrl);
+    }).indexOf(imageSrc);
 
-    return pictureIndex;
-  };
-
-  // Ищем нужную фотографию по клику
-  var selectedPicture = function (evt) {
-    var indexPicture = searchIndexPicture(evt, photos);
-
-    window.bigPicture.showBigPicture(photos[indexPicture]);
-  };
-
-  // Закрытие по ESC
-  var onFormEscPress = function (evt) {
-    window.util.isEscEvent(evt, closeBigPictureForm);
-  };
-
-  var closeBigPictureForm = function () {
-    bigPictureElement.classList.add('hidden');
-
-    document.removeEventListener('click', onBigFormPicture);
-    document.removeEventListener('click', closeBigPictureForm);
+    return photos[pictureIndex];
   };
 
   // Обработчик открытия формы изображения
-  var onBigFormPicture = function (evt) {
-    var bigPictureCloseElement = bigPictureElement.querySelector('.big-picture__cancel');
-    var isClassPicture = evt.target.className === 'picture__img';
+  var onPicturesClick = function (evt) {
+    var target = evt.target;
+    var pictureElement = target.closest('.picture');
 
-    if (!isClassPicture) {
+    if (!pictureElement) {
       return;
     }
 
-    selectedPicture(evt);
+    var imageElement = pictureElement.querySelector('.picture__img');
+    var imageSrc = imageElement.getAttribute('src');
+    var imageData = getImageData(imageSrc);
 
-    bigPictureCloseElement.addEventListener('click', closeBigPictureForm);
-    document.addEventListener('keydown', onFormEscPress);
+    window.bigPicture.showBigPicture(imageData);
   };
-
-  picturesElement.addEventListener('click', onBigFormPicture);
 
   window.backend.load(onLoadSuccess, onLoadError);
 
