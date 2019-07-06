@@ -4,6 +4,7 @@
 (function () {
   var photos = []; // Сохраним загруженные данные
   var buttonsFormElement = document.querySelector('.img-filters__form');
+  var picturesElement = document.querySelector('.pictures');
 
   var renderPhotoElement = function (dataPhotos) {
     var pictureElement = document.querySelector('#picture')
@@ -21,13 +22,13 @@
   // Вставляет фрагменты в DOM
   var addPictureList = function (descriptionPhotos) {
     var fragment = document.createDocumentFragment();
-    var similarListElement = document.querySelector('.pictures');
+
 
     for (var i = 0; i < descriptionPhotos.length; i++) {
       fragment.appendChild(renderPhotoElement(descriptionPhotos[i]));
     }
 
-    similarListElement.appendChild(fragment);
+    picturesElement.appendChild(fragment);
   };
 
   // Сообщение об ошибке
@@ -79,7 +80,9 @@
     photos = data;
     addPictureList(data);
     document.querySelector('.img-filters').classList.remove('img-filters--inactive');
+
     buttonsFormElement.addEventListener('click', onFilterButtonClick);
+    picturesElement.addEventListener('click', onPicturesClick);
   };
 
   // Сбрасывает ДОМ
@@ -88,6 +91,31 @@
     pictures.forEach(function (el) {
       el.remove();
     });
+  };
+
+  // Ищем индекс фото
+  var getImageData = function (imageSrc) {
+    var pictureIndex = photos.map(function (e) {
+      return e.url;
+    }).indexOf(imageSrc);
+
+    return photos[pictureIndex];
+  };
+
+  // Обработчик открытия формы изображения
+  var onPicturesClick = function (evt) {
+    var target = evt.target;
+    var pictureElement = target.closest('.picture');
+
+    if (!pictureElement) {
+      return;
+    }
+
+    var imageElement = pictureElement.querySelector('.picture__img');
+    var imageSrc = imageElement.getAttribute('src');
+    var imageData = getImageData(imageSrc);
+
+    window.bigPicture.showBigPicture(imageData);
   };
 
   window.backend.load(onLoadSuccess, onLoadError);
