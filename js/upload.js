@@ -15,8 +15,16 @@
     mainElement.appendChild(fragment);
   };
 
+  // Проверяет клик вне окна или нет
+  var isClickOutside = function (evt, cssSelector) {
+    var target = evt.target;
+    var otherElement = target.closest(cssSelector);
+
+    return !otherElement;
+  };
+
   // Окно успешной загрузки фото
-  var windowUploadSuccess = function () {
+  var showUploadSuccessWindow = function () {
     var successUploadElement = document.querySelector('#success')
     .content
     .querySelector('.success');
@@ -26,7 +34,7 @@
     var closeButtonElement = document.querySelector('.success__button');
 
     closeButtonElement.addEventListener('click', closeWindowUploadSuccess);
-    mainElement.addEventListener('click', closeWindowOutsideSuccess);
+    mainElement.addEventListener('click', successWindowElement);
     document.addEventListener('keydown', onFormEscPress);
   };
 
@@ -35,16 +43,15 @@
     var succesWindowElement = mainElement.querySelector('.success');
     succesWindowElement.remove();
 
-    mainElement.removeEventListener('click', closeWindowOutsideSuccess);
+    mainElement.removeEventListener('click', successWindowElement);
     document.removeEventListener('keydown', onFormEscPress);
   };
 
   // Закрытие формы успешной загрузки по клику вне окна
-  var closeWindowOutsideSuccess = function (evt) {
-    var target = evt.target;
-    var otherElement = target.closest('.success__inner');
+  var successWindowElement = function (evt) {
+    var cssSelector = '.success__inner';
 
-    if (!otherElement) {
+    if (isClickOutside(evt, cssSelector)) {
       removeWindowSuccessUpload();
     }
   };
@@ -63,7 +70,7 @@
   };
 
   // Окно ошибки загрузки фото
-  var windowUploadError = function () {
+  var showUploadErrorWindow = function () {
     var errorUploadElement = document.querySelector('#error')
     .content
     .querySelector('.error');
@@ -88,10 +95,9 @@
 
   // Закрытие формы ошибки загрузки по клику вне окна
   var closeWindowOutsideError = function (evt) {
-    var target = evt.target;
-    var otherElement = target.closest('.error__inner');
+    var cssSelector = '.error__inner';
 
-    if (!otherElement) {
+    if (isClickOutside(evt, cssSelector)) {
       removeWindowErrorUpload();
     }
   };
@@ -110,21 +116,19 @@
   };
 
   // Отправка формы
-  var uploadFormImg = function (evt) {
+  var uploadFormImg = function () {
     var data = new FormData(uploadFormElement);
-
-    evt.preventDefault();
 
     var onUploadSuccess = function () {
       uploadFormElement.reset();
       formEditionElement.classList.add('hidden');
-      windowUploadSuccess();
+      showUploadSuccessWindow();
     };
 
     var onUploadError = function () {
       uploadFormElement.reset();
       formEditionElement.classList.add('hidden');
-      windowUploadError();
+      showUploadErrorWindow();
     };
 
     window.backend.uploadForm(data, onUploadSuccess, onUploadError);

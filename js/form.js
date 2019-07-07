@@ -107,6 +107,7 @@
 
   // Обработчик отправки формы
   uploadFormElement.addEventListener('submit', function (evt) {
+    evt.preventDefault();
     window.upload.uploadFormImg(evt);
   });
 
