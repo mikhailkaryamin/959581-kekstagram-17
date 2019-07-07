@@ -3,8 +3,9 @@
 // Перемещние пина слайдера и изменение глубины эффекта
 (function () {
   var imgUploadElement = document.querySelector('.img-upload');
-  var uploadFileElement = document.getElementById('upload-file');
+  var uploadFileElement = document.querySelector('#upload-file');
   var formEditionElement = imgUploadElement.querySelector('.img-upload__overlay');
+  var uploadFormElement = imgUploadElement.querySelector('.img-upload__form');
 
   // Загрузчик фотографий
   var onEditionEscPress = function (evt) {
@@ -20,6 +21,7 @@
     formEditionElement.classList.add('hidden');
 
     uploadFileElement.value = '';
+    document.removeEventListener('keydown', onEditionEscPress);
   };
 
   var openFormEdition = function () {
@@ -102,4 +104,10 @@
       closeFormEdition();
     });
   });
+
+  // Обработчик отправки формы
+  uploadFormElement.addEventListener('submit', function (evt) {
+    window.upload.uploadFormImg(evt);
+  });
+
 })();

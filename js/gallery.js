@@ -23,7 +23,6 @@
   var addPictureList = function (descriptionPhotos) {
     var fragment = document.createDocumentFragment();
 
-
     for (var i = 0; i < descriptionPhotos.length; i++) {
       fragment.appendChild(renderPhotoElement(descriptionPhotos[i]));
     }
