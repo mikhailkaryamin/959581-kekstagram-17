@@ -18,9 +18,9 @@
   // Проверяет клик вне окна или нет
   var isClickOutside = function (evt, cssSelector) {
     var target = evt.target;
-    var otherElement = target.closest(cssSelector);
+    var element = target.closest(cssSelector);
 
-    return !otherElement;
+    return !element;
   };
 
   // Окно успешной загрузки фото
@@ -34,7 +34,7 @@
     var closeButtonElement = document.querySelector('.success__button');
 
     closeButtonElement.addEventListener('click', closeWindowUploadSuccess);
-    mainElement.addEventListener('click', successWindowElement);
+    mainElement.addEventListener('click', onSuccessWindowOutsideCLick);
     document.addEventListener('keydown', onFormEscPress);
   };
 
@@ -43,15 +43,13 @@
     var succesWindowElement = mainElement.querySelector('.success');
     succesWindowElement.remove();
 
-    mainElement.removeEventListener('click', successWindowElement);
+    mainElement.removeEventListener('click', onSuccessWindowOutsideCLick);
     document.removeEventListener('keydown', onFormEscPress);
   };
 
   // Закрытие формы успешной загрузки по клику вне окна
-  var successWindowElement = function (evt) {
-    var cssSelector = '.success__inner';
-
-    if (isClickOutside(evt, cssSelector)) {
+  var onSuccessWindowOutsideCLick = function (evt) {
+    if (isClickOutside(evt, '.success__inner')) {
       removeWindowSuccessUpload();
     }
   };
@@ -79,7 +77,7 @@
     var errorButtonElement = document.querySelector('.error__buttons');
 
     errorButtonElement.addEventListener('click', closeWindowUploadError);
-    mainElement.addEventListener('click', closeWindowOutsideError);
+    mainElement.addEventListener('click', onErrorWindowOutsideCLick);
     document.addEventListener('keydown', onFormErrorEscPress);
   };
 
@@ -89,15 +87,13 @@
 
     errorUploadElement.remove();
 
-    mainElement.removeEventListener('click', closeWindowOutsideError);
+    mainElement.removeEventListener('click', onErrorWindowOutsideCLick);
     document.removeEventListener('keydown', onFormErrorEscPress);
   };
 
   // Закрытие формы ошибки загрузки по клику вне окна
-  var closeWindowOutsideError = function (evt) {
-    var cssSelector = '.error__inner';
-
-    if (isClickOutside(evt, cssSelector)) {
+  var onErrorWindowOutsideCLick = function (evt) {
+    if (isClickOutside(evt, '.error__inner')) {
       removeWindowErrorUpload();
     }
   };
