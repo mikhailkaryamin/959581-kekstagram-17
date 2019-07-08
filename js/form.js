@@ -6,6 +6,8 @@
   var uploadFileElement = document.querySelector('#upload-file');
   var formEditionElement = imgUploadElement.querySelector('.img-upload__overlay');
   var uploadFormElement = imgUploadElement.querySelector('.img-upload__form');
+  var zoomOutButtonElement = formEditionElement.querySelector('.scale__control--smaller');
+  var zoomInButtonElement = formEditionElement.querySelector('.scale__control--bigger');
 
   // Загрузчик фотографий
   var onEditionEscPress = function (evt) {
@@ -21,6 +23,9 @@
     formEditionElement.classList.add('hidden');
 
     uploadFileElement.value = '';
+    window.scaleImage.resetScaleValue();
+    zoomOutButtonElement.removeEventListener('click', onPlusScale);
+    zoomInButtonElement.removeEventListener('click', onMinusScale);
     document.removeEventListener('keydown', onEditionEscPress);
   };
 
@@ -92,23 +97,35 @@
 
   };
 
+  // Обработчики зума
+  var onPlusScale = function () {
+    window.scaleImage.onPlusScale(1);
+  };
+  var onMinusScale = function () {
+    window.scaleImage.onMinusScale(-1);
+  };
+
   // Открытие попапа и формы редактирования фото
   uploadFileElement.addEventListener('change', function () {
     openFormEdition();
     window.effects.resetFormEdition();
     window.effects.editImage();
 
-    var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
+    // Обработчик отправки формы
+    uploadFormElement.addEventListener('submit', function (evt) {
+      evt.preventDefault();
+      window.upload.uploadFormImg(evt);
+    });
 
+    // Обработчики зума
+    zoomInButtonElement.addEventListener('click', onPlusScale);
+    zoomOutButtonElement.addEventListener('click', onMinusScale);
+
+    // Обработчик закрытия окна
+    var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
     editionCloseElement.addEventListener('click', function () {
       closeFormEdition();
     });
-  });
-
-  // Обработчик отправки формы
-  uploadFormElement.addEventListener('submit', function (evt) {
-    evt.preventDefault();
-    window.upload.uploadFormImg(evt);
   });
 
 })();
