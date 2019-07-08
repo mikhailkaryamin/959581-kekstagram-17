@@ -2,6 +2,11 @@
 
 (function () {
   var bigPictureElement = document.querySelector('.big-picture');
+  var similarListElement = document.querySelector('.social__comments');
+  var commentsLoaderButtonElement = bigPictureElement.querySelector('.comments-loader');
+  var comments;
+  var countCommentsMin = 0;
+  var countCommentsMax = 5;
 
   // Создаем комментарий
   var createComment = function (comment) {
@@ -16,30 +21,52 @@
 
   // Сбрасывает список комментариев
   var clearCommentsList = function () {
-    var comments = bigPictureElement.querySelectorAll('.social__comment');
-    comments.forEach(function (el) {
+    var commentsElements = bigPictureElement.querySelectorAll('.social__comment');
+
+    commentsElements.forEach(function (el) {
       el.remove();
     });
   };
 
+  // Вствляем комментарии
+  var insertListComments = function (startLoad, finishLoad) {
+    var fragment = document.createDocumentFragment();
+    for (var i = startLoad; i < finishLoad; i++) {
+      fragment.appendChild(createComment(comments[i]));
+    }
+
+    return fragment;
+  };
+
+  // Получаем начало и конец массива комментариев для загрузчика
+  var getStartFinishLoaderComments = function () {
+    if (countCommentsMax + 5 < comments.length) {
+      countCommentsMin += 5;
+      countCommentsMax += 5;
+    } else {
+      countCommentsMin += 5;
+      countCommentsMax = comments.length;
+      commentsLoaderButtonElement.classList.add('hidden');
+    }
+    similarListElement.appendChild(insertListComments(countCommentsMin, countCommentsMax));
+
+    return similarListElement;
+  };
+
   // Создаем и выводим фото с комментариями
   var displayBigPicture = function (dataPhoto) {
-    var comments = dataPhoto.comments;
     var pictureImgElement = bigPictureElement.querySelector('.big-picture__img');
     var pictureImgSrcElement = pictureImgElement.querySelector('img');
     var likesCountElement = bigPictureElement.querySelector('.likes-count');
     var commentsCountElement = bigPictureElement.querySelector('.comments-count');
     var socialCaption = bigPictureElement.querySelector('.social__caption');
-    var fragment = document.createDocumentFragment();
-    var similarListElement = document.querySelector('.social__comments');
+    comments = dataPhoto.comments;
 
-    comments.forEach(function (comment) {
-      fragment.appendChild(createComment(comment));
-    });
+    var commentPreLoad = insertListComments(countCommentsMin, countCommentsMax);
 
     clearCommentsList();
 
-    similarListElement.appendChild(fragment);
+    similarListElement.appendChild(commentPreLoad);
 
     pictureImgSrcElement.src = dataPhoto.url;
     likesCountElement.textContent = dataPhoto.likes;
@@ -49,12 +76,7 @@
 
   // Открытие формы
   var openBigPictureForm = function () {
-    var commentCountElement = bigPictureElement.querySelector('.social__comment-count');
-    var commentLoaderElement = bigPictureElement.querySelector('.comments-loader');
-
     bigPictureElement.classList.remove('hidden');
-    commentCountElement.classList.add('hidden');
-    commentLoaderElement.classList.add('hidden');
   };
 
   // Закрытие по ESC
@@ -65,8 +87,17 @@
   // Обработчик закрытия
   var closeBigPictureForm = function () {
     bigPictureElement.classList.add('hidden');
+    commentsLoaderButtonElement.classList.remove('hidden');
+    countCommentsMin = 0;
+    countCommentsMax = 5;
 
     document.removeEventListener('click', closeBigPictureForm);
+    commentsLoaderButtonElement.removeEventListener('click', onLoaderCommentsClick);
+  };
+
+  // Обработчик загрузчика комментариев
+  var onLoaderCommentsClick = function () {
+    getStartFinishLoaderComments();
   };
 
   // Форма с ее содержимым
@@ -75,7 +106,7 @@
 
     displayBigPicture(data);
     openBigPictureForm();
-
+    commentsLoaderButtonElement.addEventListener('click', onLoaderCommentsClick);
     bigPictureCloseElement.addEventListener('click', closeBigPictureForm);
     document.addEventListener('keydown', onFormEscPress);
   };
