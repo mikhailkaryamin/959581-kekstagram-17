@@ -15,11 +15,7 @@
       return;
     }
 
-    currentTransformScaleNumber = parseInt(scaleControlValueElement.value, 10) / 100 + 0.25;
-    currentScaleInputNumber = parseInt(scaleControlValueElement.value, 10) + 25 + '%';
-
-    imgPreviewElement.style.transform = 'scale(' + currentTransformScaleNumber + ')';
-    scaleControlValueElement.value = currentScaleInputNumber;
+    onScaleChange(1);
   };
 
   // Получаем значение при -
@@ -28,8 +24,12 @@
       return;
     }
 
-    currentTransformScaleNumber = parseInt(scaleControlValueElement.value, 10) / 100 - 0.25;
-    currentScaleInputNumber = parseInt(scaleControlValueElement.value, 10) - 25 + '%';
+    onScaleChange(-1);
+  };
+
+  var onScaleChange = function (zoomFactor) {
+    currentTransformScaleNumber = parseInt(scaleControlValueElement.value, 10) / 100 + (zoomFactor * 0.25);
+    currentScaleInputNumber = parseInt(scaleControlValueElement.value, 10) + (zoomFactor * 25) + '%';
 
     imgPreviewElement.style.transform = 'scale(' + currentTransformScaleNumber + ')';
     scaleControlValueElement.value = currentScaleInputNumber;

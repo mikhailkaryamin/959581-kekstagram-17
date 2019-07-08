@@ -6,8 +6,8 @@
   var uploadFileElement = document.querySelector('#upload-file');
   var formEditionElement = imgUploadElement.querySelector('.img-upload__overlay');
   var uploadFormElement = imgUploadElement.querySelector('.img-upload__form');
-  var buttonSmallerImgElement = formEditionElement.querySelector('.scale__control--smaller');
-  var buttonBiggerImgElement = formEditionElement.querySelector('.scale__control--bigger');
+  var zoomOutButtonElement = formEditionElement.querySelector('.scale__control--smaller');
+  var zoomInButtonElement = formEditionElement.querySelector('.scale__control--bigger');
 
   // Загрузчик фотографий
   var onEditionEscPress = function (evt) {
@@ -24,8 +24,8 @@
 
     uploadFileElement.value = '';
     window.scaleImage.resetScaleValue();
-    buttonSmallerImgElement.removeEventListener('click', onPlusScale);
-    buttonBiggerImgElement.removeEventListener('click', onMinusScale);
+    zoomOutButtonElement.removeEventListener('click', onPlusScale);
+    zoomInButtonElement.removeEventListener('click', onMinusScale);
     document.removeEventListener('keydown', onEditionEscPress);
   };
 
@@ -99,10 +99,10 @@
 
   // Обработчики зума
   var onPlusScale = function () {
-    window.scaleImage.onPlusScale();
+    window.scaleImage.onPlusScale(1);
   };
   var onMinusScale = function () {
-    window.scaleImage.onMinusScale();
+    window.scaleImage.onMinusScale(-1);
   };
 
   // Открытие попапа и формы редактирования фото
@@ -118,8 +118,8 @@
     });
 
     // Обработчики зума
-    buttonBiggerImgElement.addEventListener('click', onPlusScale);
-    buttonSmallerImgElement.addEventListener('click', onMinusScale);
+    zoomInButtonElement.addEventListener('click', onPlusScale);
+    zoomOutButtonElement.addEventListener('click', onMinusScale);
 
     // Обработчик закрытия окна
     var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
