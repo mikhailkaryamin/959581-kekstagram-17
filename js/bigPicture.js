@@ -4,9 +4,8 @@
   var bigPictureElement = document.querySelector('.big-picture');
   var similarListElement = document.querySelector('.social__comments');
   var commentsLoaderButtonElement = bigPictureElement.querySelector('.comments-loader');
+  var commentCountElement = bigPictureElement.querySelector('.social__comment-count');
   var comments;
-  var countCommentsMin = 0;
-  var countCommentsMax = 5;
 
   // Создаем комментарий
   var createComment = function (comment) {
@@ -28,8 +27,8 @@
     });
   };
 
-  // Вствляем комментарии
-  var insertListComments = function (startLoad, finishLoad) {
+  // Создаем фрагмент комментариев
+  var creatFragmentComments = function (startLoad, finishLoad) {
     var fragment = document.createDocumentFragment();
     for (var i = startLoad; i < finishLoad; i++) {
       fragment.appendChild(createComment(comments[i]));
@@ -38,19 +37,57 @@
     return fragment;
   };
 
-  // Получаем начало и конец массива комментариев для загрузчика
+  // Счетчик первой загрузки
+  var counterStartUp = 0;
+  // Индекс массива начала загрузки комментариев
+  var startLoaderComment = 0;
+  // Индекс массива конца загрузки комментариев
+  var finishLoaderComment = 5;
+
+  // Вставляет строку с количеством загруженных и общим количеством комментариев
+  var insertStringCountCommentElement = function (x) {
+    var flag = x;
+    // Ставит нужный флаг, когда комментариев меньше 5, либо когда все комментарии загружены
+    var k = flag === 'finish' ? comments.length : startLoaderComment + 5;
+    var stringCountCommentElement = commentCountElement.innerHTML = k + ' из <span class="comments-count">' + comments.length + '</span> комментариев';
+    return stringCountCommentElement;
+  };
+
+  /* Считает начало и конец массива комментариев, затем записываем в переменные "startLoaderComment" и
+  "finishLoaderComment", а так же отправляет нужный флаг для строки комментариев*/
   var getStartFinishLoaderComments = function () {
-    if (countCommentsMax + 5 < comments.length) {
-      countCommentsMin += 5;
-      countCommentsMax += 5;
-    } else {
-      countCommentsMin += 5;
-      countCommentsMax = comments.length;
+    if (counterStartUp === 0 && comments.length > 5) { // При первой загрузке и комментариев больше 5
+      counterStartUp++;
+      insertStringCountCommentElement();
+    } else if (comments.length < 5) { // При первой загрузке и комментариев меньше 5
+      finishLoaderComment = comments.length;
+      insertStringCountCommentElement('finish');
+      commentsLoaderButtonElement.classList.add('hidden');
+    } else if (finishLoaderComment + 5 < comments.length) { // При подгрузке комментариев
+      startLoaderComment += 5;
+      finishLoaderComment += 5;
+      insertStringCountCommentElement();
+    } else { // При загрузке оставшихся комментариев
+      startLoaderComment += 5;
+      finishLoaderComment = comments.length;
+      insertStringCountCommentElement('finish');
       commentsLoaderButtonElement.classList.add('hidden');
     }
-    similarListElement.appendChild(insertListComments(countCommentsMin, countCommentsMax));
+  };
 
+  // Вставляет комментарии в разметку
+  var insertCommentListLoader = function () {
+    var fragment = creatFragmentComments(startLoaderComment, finishLoaderComment);
+    similarListElement.appendChild(fragment);
     return similarListElement;
+  };
+
+  // Встваляет комментарии при первой загрузке большой картинки
+  var insertStartupCommentList = function () {
+    getStartFinishLoaderComments();
+    var fragment = creatFragmentComments(startLoaderComment, finishLoaderComment);
+    clearCommentsList();
+    similarListElement.appendChild(fragment);
   };
 
   // Создаем и выводим фото с комментариями
@@ -62,11 +99,7 @@
     var socialCaption = bigPictureElement.querySelector('.social__caption');
     comments = dataPhoto.comments;
 
-    var commentPreLoad = insertListComments(countCommentsMin, countCommentsMax);
-
-    clearCommentsList();
-
-    similarListElement.appendChild(commentPreLoad);
+    insertStartupCommentList();
 
     pictureImgSrcElement.src = dataPhoto.url;
     likesCountElement.textContent = dataPhoto.likes;
@@ -88,9 +121,9 @@
   var closeBigPictureForm = function () {
     bigPictureElement.classList.add('hidden');
     commentsLoaderButtonElement.classList.remove('hidden');
-    countCommentsMin = 0;
-    countCommentsMax = 5;
-
+    counterStartUp = 0;
+    startLoaderComment = 0;
+    finishLoaderComment = 5;
     document.removeEventListener('click', closeBigPictureForm);
     commentsLoaderButtonElement.removeEventListener('click', onLoaderCommentsClick);
   };
@@ -98,6 +131,7 @@
   // Обработчик загрузчика комментариев
   var onLoaderCommentsClick = function () {
     getStartFinishLoaderComments();
+    insertCommentListLoader();
   };
 
   // Форма с ее содержимым
