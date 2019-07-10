@@ -3,6 +3,7 @@
 (function () {
   var bigPictureElement = document.querySelector('.big-picture');
   var similarListElement = document.querySelector('.social__comments');
+<<<<<<< HEAD
   var commentsLoaderButtonElement = bigPictureElement.querySelector('.comments-loader');
   var commentCountElement = bigPictureElement.querySelector('.social__comment-count');
   var comments;
@@ -17,11 +18,18 @@
 
     return elementDescription;
   };
+=======
+  var commentLoaderElement = bigPictureElement.querySelector('.comments-loader');
+  var comments;
+>>>>>>> f8e5c76b69946d351d263ac63f5405a907c77249
 
   // Сбрасывает список комментариев
   var clearCommentsList = function () {
     var commentsElements = bigPictureElement.querySelectorAll('.social__comment');
+<<<<<<< HEAD
 
+=======
+>>>>>>> f8e5c76b69946d351d263ac63f5405a907c77249
     commentsElements.forEach(function (el) {
       el.remove();
     });
@@ -99,7 +107,14 @@
     var socialCaption = bigPictureElement.querySelector('.social__caption');
     comments = dataPhoto.comments;
 
+<<<<<<< HEAD
     insertStartupCommentList();
+=======
+    var firstLoadCommentList = window.loaderComments.getFragmentCommentsList(comments);
+    clearCommentsList();
+
+    similarListElement.appendChild(firstLoadCommentList);
+>>>>>>> f8e5c76b69946d351d263ac63f5405a907c77249
 
     pictureImgSrcElement.src = dataPhoto.url;
     likesCountElement.textContent = dataPhoto.likes;
@@ -120,10 +135,18 @@
   // Обработчик закрытия
   var closeBigPictureForm = function () {
     bigPictureElement.classList.add('hidden');
+<<<<<<< HEAD
     commentsLoaderButtonElement.classList.remove('hidden');
     counterStartUp = 0;
     startLoaderComment = 0;
     finishLoaderComment = 5;
+=======
+    commentLoaderElement.classList.remove('hidden');
+
+    window.loaderComments.resetCounter();
+
+    commentLoaderElement.removeEventListener('click', onLoaderComments);
+>>>>>>> f8e5c76b69946d351d263ac63f5405a907c77249
     document.removeEventListener('click', closeBigPictureForm);
     commentsLoaderButtonElement.removeEventListener('click', onLoaderCommentsClick);
   };
@@ -134,13 +157,24 @@
     insertCommentListLoader();
   };
 
+  // Обработчик подгрузки комментариев
+  var onLoaderComments = function () {
+    var fragmentCommentList = window.loaderComments.getFragmentCommentsList(comments);
+    similarListElement.appendChild(fragmentCommentList);
+  };
+
   // Форма с ее содержимым
   var showBigPicture = function (data) {
     var bigPictureCloseElement = bigPictureElement.querySelector('.big-picture__cancel');
 
     displayBigPicture(data);
     openBigPictureForm();
+<<<<<<< HEAD
     commentsLoaderButtonElement.addEventListener('click', onLoaderCommentsClick);
+=======
+
+    commentLoaderElement.addEventListener('click', onLoaderComments);
+>>>>>>> f8e5c76b69946d351d263ac63f5405a907c77249
     bigPictureCloseElement.addEventListener('click', closeBigPictureForm);
     document.addEventListener('keydown', onFormEscPress);
   };
