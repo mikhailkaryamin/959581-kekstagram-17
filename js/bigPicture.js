@@ -23,7 +23,7 @@
     var socialCaption = bigPictureElement.querySelector('.social__caption');
     comments = dataPhoto.comments;
 
-    var firstLoadCommentList = window.loaderComments.getFragmentCommentsList(comments);
+    var firstLoadCommentList = window.loaderComments.getCommentListFragment(comments);
     clearCommentsList();
 
     similarListElement.appendChild(firstLoadCommentList);
@@ -47,9 +47,8 @@
   // Обработчик закрытия
   var closeBigPictureForm = function () {
     bigPictureElement.classList.add('hidden');
-    commentLoaderElement.classList.remove('hidden');
 
-    window.loaderComments.resetCounter();
+    window.loaderComments.resetIndex();
 
     commentLoaderElement.removeEventListener('click', onLoaderComments);
     document.removeEventListener('click', closeBigPictureForm);
@@ -57,7 +56,7 @@
 
   // Обработчик подгрузки комментариев
   var onLoaderComments = function () {
-    var fragmentCommentList = window.loaderComments.getFragmentCommentsList(comments);
+    var fragmentCommentList = window.loaderComments.getCommentListFragment(comments);
     similarListElement.appendChild(fragmentCommentList);
   };
 

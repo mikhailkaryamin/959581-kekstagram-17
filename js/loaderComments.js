@@ -5,14 +5,7 @@
 
   var bigPictureElement = document.querySelector('.big-picture');
   var commentLoaderElement = bigPictureElement.querySelector('.comments-loader');
-  var counter = 0;
-  var startCounter = 0;
-
-  // Сбрасывает счетчики
-  var resetCounter = function () {
-    counter = 0;
-    startCounter = 0;
-  };
+  var commentIndex = 0;
 
   // Создаем комментарий
   var createComment = function (comment) {
@@ -26,41 +19,38 @@
   };
 
   // Встваляет счетчик комментариев в разметку
-  var insertCountComments = function (numberСomments) {
+  var insertCommentsCounter = function (numberСomments) {
     var commentCountElement = bigPictureElement.querySelector('.social__comment-count');
-    var stringCountCommentElement = commentCountElement.innerHTML = counter + ' из <span class="comments-count">' + numberСomments + '</span> комментариев';
+    var stringCountCommentElement = commentCountElement.innerHTML = commentIndex + ' из <span class="comments-count">' + numberСomments + '</span> комментариев';
 
     return stringCountCommentElement;
   };
 
   // Получаем фрагмент массива комментарие и вызываем счетчик комментариев
-  var getFragmentCommentsList = function (comments) {
+  var getCommentListFragment = function (comments) {
     var fragment = document.createDocumentFragment();
-    var numberСomments = comments.length;
+    var i = 0;
 
-    for (var i = startCounter; i < COUNT_COMMENTS + startCounter; i++) {
-      if (counter === numberСomments) {
-        commentLoaderElement.classList.add('hidden');
-        insertCountComments(numberСomments);
-        break;
-      } else {
-        fragment.appendChild(createComment(comments[i]));
-        counter++;
-
-        if (counter === numberСomments) {
-          commentLoaderElement.classList.add('hidden');
-        }
-      }
+    while (commentIndex < comments.length && i < COUNT_COMMENTS) {
+      fragment.appendChild(createComment(comments[commentIndex]));
+      commentIndex++;
+      i++;
     }
 
-    insertCountComments(numberСomments);
+    if (commentIndex < comments.length) {
+      commentLoaderElement.classList.remove('hidden');
+    } else {
+      commentLoaderElement.classList.add('hidden');
+    }
 
-    startCounter += 5;
+    insertCommentsCounter(comments.length);
     return fragment;
   };
 
   window.loaderComments = {
-    getFragmentCommentsList: getFragmentCommentsList,
-    resetCounter: resetCounter
+    getCommentListFragment: getCommentListFragment,
+    resetIndex: function () {
+      commentIndex = 0;
+    }
   };
 })();
