@@ -8,13 +8,20 @@
   var uploadFormElement = imgUploadElement.querySelector('.img-upload__form');
   var zoomOutButtonElement = formEditionElement.querySelector('.scale__control--smaller');
   var zoomInButtonElement = formEditionElement.querySelector('.scale__control--bigger');
+  var inputHashtagElement = document.querySelector('.text__hashtags');
+
+  // Валидатор инпута
+  var validationInput = function (input) {
+    window.validator.validator.checkValidity(input);
+  };
 
   // Загрузчик фотографий
   var onEditionEscPress = function (evt) {
     var ESC_KEYCODE = 27;
     var textAreaElement = document.querySelector('.text__description:focus');
+    var inputFocusElement = document.querySelector('.text__hashtags:focus');
 
-    if (evt.keyCode === ESC_KEYCODE && !textAreaElement) {
+    if (evt.keyCode === ESC_KEYCODE && !textAreaElement && !inputFocusElement) {
       closeFormEdition();
     }
   };
@@ -27,6 +34,7 @@
     zoomOutButtonElement.removeEventListener('click', onPlusScale);
     zoomInButtonElement.removeEventListener('click', onMinusScale);
     document.removeEventListener('keydown', onEditionEscPress);
+    inputHashtagElement.removeEventListener('input', onInputValidation);
   };
 
   var openFormEdition = function () {
@@ -97,6 +105,11 @@
 
   };
 
+  // Обработчик инпута
+  var onInputValidation = function (e) {
+    validationInput(e.target);
+  };
+
   // Обработчики зума
   var onPlusScale = function () {
     window.scaleImage.onPlusScale(1);
@@ -116,6 +129,8 @@
       evt.preventDefault();
       window.upload.uploadFormImg(evt);
     });
+
+    inputHashtagElement.addEventListener('input', onInputValidation);
 
     // Обработчики зума
     zoomInButtonElement.addEventListener('click', onPlusScale);
