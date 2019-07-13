@@ -20,7 +20,7 @@
     var pictureImgSrcElement = pictureImgElement.querySelector('img');
     var likesCountElement = bigPictureElement.querySelector('.likes-count');
     var commentsCountElement = bigPictureElement.querySelector('.comments-count');
-    var socialCaption = bigPictureElement.querySelector('.social__caption');
+    var socialCaptionElement = bigPictureElement.querySelector('.social__caption');
     comments = dataPhoto.comments;
 
     var firstLoadCommentList = window.loaderComments.getCommentListFragment(comments);
@@ -31,7 +31,7 @@
     pictureImgSrcElement.src = dataPhoto.url;
     likesCountElement.textContent = dataPhoto.likes;
     commentsCountElement.textContent = dataPhoto.comments.length;
-    socialCaption.textContent = dataPhoto.description;
+    socialCaptionElement.textContent = dataPhoto.description;
   };
 
   // Открытие формы
@@ -41,17 +41,18 @@
 
   // Закрытие по ESC
   var onFormEscPress = function (evt) {
-    window.util.isEscEvent(evt, closeBigPictureForm);
+    window.util.isEscEvent(evt, onFormClose);
   };
 
   // Обработчик закрытия
-  var closeBigPictureForm = function () {
+  var onFormClose = function () {
     bigPictureElement.classList.add('hidden');
 
     window.loaderComments.resetIndex();
 
     commentLoaderElement.removeEventListener('click', onLoaderComments);
-    document.removeEventListener('click', closeBigPictureForm);
+    document.removeEventListener('click', onFormClose);
+    document.removeEventListener('keydown', onFormEscPress);
   };
 
   // Обработчик подгрузки комментариев
@@ -68,7 +69,7 @@
     openBigPictureForm();
 
     commentLoaderElement.addEventListener('click', onLoaderComments);
-    bigPictureCloseElement.addEventListener('click', closeBigPictureForm);
+    bigPictureCloseElement.addEventListener('click', onFormClose);
     document.addEventListener('keydown', onFormEscPress);
   };
 

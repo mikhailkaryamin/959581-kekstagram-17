@@ -2,6 +2,12 @@
 
 // Создаем DOM фрагмент 'Описание фотографии'
 (function () {
+  var BUTTON_ID_TO_FILTER = {
+    'filter-popular': 'filterPopular',
+    'filter-new': 'filterNew',
+    'filter-discussed': 'filterComments'
+  };
+
   var photos = []; // Сохраним загруженные данные
   var buttonsFormElement = document.querySelector('.img-filters__form');
   var picturesElement = document.querySelector('.pictures');
@@ -10,32 +16,32 @@
     var pictureElement = document.querySelector('#picture')
     .content
     .querySelector('.picture');
-    var elementDescription = pictureElement.cloneNode(true);
+    var descriptionElement = pictureElement.cloneNode(true);
 
-    elementDescription.querySelector('.picture__img').src = dataPhotos.url;
-    elementDescription.querySelector('.picture__likes').textContent = dataPhotos.likes;
-    elementDescription.querySelector('.picture__comments').textContent = dataPhotos.comments.length;
+    descriptionElement.querySelector('.picture__img').src = dataPhotos.url;
+    descriptionElement.querySelector('.picture__likes').textContent = dataPhotos.likes;
+    descriptionElement.querySelector('.picture__comments').textContent = dataPhotos.comments.length;
 
-    return elementDescription;
+    return descriptionElement;
   };
 
   // Вставляет фрагменты в DOM
   var addPictureList = function (descriptionPhotos) {
     var fragment = document.createDocumentFragment();
 
-    for (var i = 0; i < descriptionPhotos.length; i++) {
-      fragment.appendChild(renderPhotoElement(descriptionPhotos[i]));
-    }
+    descriptionPhotos.forEach(function (el) {
+      fragment.appendChild(renderPhotoElement(el));
+    });
 
     picturesElement.appendChild(fragment);
   };
 
   // Сообщение об ошибке
   var onLoadError = function (errorMessage) {
-    var node = document.createElement('div');
-    node.classList.add('error-message');
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
+    var errorMessageElement = document.createElement('div');
+    errorMessageElement.classList.add('error-message');
+    errorMessageElement.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', errorMessageElement);
   };
 
   var updateButtonsClass = function (activeButton) {
@@ -58,18 +64,13 @@
   var onFilterButtonClick = function (evt) {
     var isTypeButton = evt.target.type === 'button';
     var isActiveButton = evt.target.classList.contains('img-filters__button--active');
-    var ButtonIdToFIlterName = {
-      'filter-popular': 'filterPopular',
-      'filter-new': 'filterNew',
-      'filter-discussed': 'filterComments'
-    };
 
     if (!isTypeButton || isActiveButton) {
       return;
     }
 
     updateButtonsClass(evt.target);
-    var filterFunctionName = ButtonIdToFIlterName[evt.target.id];
+    var filterFunctionName = BUTTON_ID_TO_FILTER[evt.target.id];
     var filteredPictures = window.filters[filterFunctionName](photos);
 
     debounceUpdatePicturesList(filteredPictures);

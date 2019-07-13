@@ -8,20 +8,17 @@
   var uploadFormElement = imgUploadElement.querySelector('.img-upload__form');
   var zoomOutButtonElement = formEditionElement.querySelector('.scale__control--smaller');
   var zoomInButtonElement = formEditionElement.querySelector('.scale__control--bigger');
-  var inputHashtagElement = document.querySelector('.text__hashtags');
-
-  // Валидатор инпута
-  var validationInput = function (input) {
-    window.validator.validator.checkValidity(input);
-  };
+  var hashtagInputElement = document.querySelector('.text__hashtags');
+  var effectsListElement = document.querySelector('.effects__list');
+  var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
 
   // Загрузчик фотографий
   var onEditionEscPress = function (evt) {
     var ESC_KEYCODE = 27;
-    var textAreaElement = document.querySelector('.text__description:focus');
-    var inputFocusElement = document.querySelector('.text__hashtags:focus');
+    var descriptionInputElement = document.querySelector('.text__description:focus');
+    var hashtagInputFocusElement = document.querySelector('.text__hashtags:focus');
 
-    if (evt.keyCode === ESC_KEYCODE && !textAreaElement && !inputFocusElement) {
+    if (evt.keyCode === ESC_KEYCODE && !descriptionInputElement && !hashtagInputFocusElement) {
       closeFormEdition();
     }
   };
@@ -34,7 +31,10 @@
     zoomOutButtonElement.removeEventListener('click', onPlusScale);
     zoomInButtonElement.removeEventListener('click', onMinusScale);
     document.removeEventListener('keydown', onEditionEscPress);
-    inputHashtagElement.removeEventListener('input', onInputValidation);
+    hashtagInputElement.removeEventListener('input', onHashtagInput);
+    effectsListElement.removeEventListener('change', onEffectChange);
+    uploadFormElement.removeEventListener('submit', onUploadForm);
+    editionCloseElement.removeEventListener('click', closeFormEdition);
   };
 
   var openFormEdition = function () {
@@ -105,9 +105,16 @@
 
   };
 
+  // Отправка формы
+  var onUploadForm = function (evt) {
+    evt.preventDefault();
+    window.upload.uploadFormImg(evt);
+    uploadFormElement.removeEventListener('submit', onUploadForm);
+  };
+
   // Обработчик инпута
-  var onInputValidation = function (e) {
-    validationInput(e.target);
+  var onHashtagInput = function (e) {
+    window.validator.checkValidity(e.target);
   };
 
   // Обработчики зума
@@ -118,28 +125,28 @@
     window.scaleImage.onMinusScale(-1);
   };
 
+  // Обработчик эффектов
+  var onEffectChange = function (evt) {
+    window.effects.setEffectChange(evt);
+  };
+
   // Открытие попапа и формы редактирования фото
   uploadFileElement.addEventListener('change', function () {
     openFormEdition();
     window.effects.resetFormEdition();
-    window.effects.editImage();
+
+    effectsListElement.addEventListener('change', onEffectChange);
 
     // Обработчик отправки формы
-    uploadFormElement.addEventListener('submit', function (evt) {
-      evt.preventDefault();
-      window.upload.uploadFormImg(evt);
-    });
+    uploadFormElement.addEventListener('submit', onUploadForm);
 
-    inputHashtagElement.addEventListener('input', onInputValidation);
+    hashtagInputElement.addEventListener('input', onHashtagInput);
 
     // Обработчики зума
     zoomInButtonElement.addEventListener('click', onPlusScale);
     zoomOutButtonElement.addEventListener('click', onMinusScale);
 
     // Обработчик закрытия окна
-    var editionCloseElement = imgUploadElement.querySelector('.img-upload__cancel');
-    editionCloseElement.addEventListener('click', function () {
-      closeFormEdition();
-    });
+    editionCloseElement.addEventListener('click', closeFormEdition);
   });
 })();
