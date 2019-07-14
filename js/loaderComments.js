@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var COUNT_COMMENTS = 5;
+  var COMMENTS_COUNT = 5;
 
   var bigPictureElement = document.querySelector('.big-picture');
   var commentLoaderElement = bigPictureElement.querySelector('.comments-loader');
@@ -10,12 +10,12 @@
   // Создаем комментарий
   var createComment = function (comment) {
     var commentElement = bigPictureElement.querySelector('.social__comment');
-    var elementDescription = commentElement.cloneNode(true);
+    var descriptionElement = commentElement.cloneNode(true);
 
-    elementDescription.querySelector('.social__text').textContent = comment.message;
-    elementDescription.querySelector('.social__picture').src = comment.avatar;
+    descriptionElement.querySelector('.social__text').textContent = comment.message;
+    descriptionElement.querySelector('.social__picture').src = comment.avatar;
 
-    return elementDescription;
+    return descriptionElement;
   };
 
   // Встваляет счетчик комментариев в разметку
@@ -31,7 +31,7 @@
     var fragment = document.createDocumentFragment();
     var i = 0;
 
-    while (commentIndex < comments.length && i < COUNT_COMMENTS) {
+    while (commentIndex < comments.length && i < COMMENTS_COUNT) {
       fragment.appendChild(createComment(comments[commentIndex]));
       commentIndex++;
       i++;

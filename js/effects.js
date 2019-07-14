@@ -1,40 +1,41 @@
 'use strict';
 
 (function () {
+  var EFFECT_SETTINGS = {
+    chrome: {
+      minValue: 0,
+      maxValue: 1
+    },
+
+    sepia: {
+      minValue: 0,
+      maxValue: 1
+    },
+
+    marvin: {
+      minValue: 0,
+      maxValue: 100
+    },
+
+    phobos: {
+      minValue: 0,
+      maxValue: 3
+    },
+
+    heat: {
+      minValue: 1,
+      maxValue: 3
+    }
+  };
+
   var currentFilterName = 'none';
   var currentFilterClassName = '';
   var imgPreviewElement = document.querySelector('.img-upload__preview');
   var sliderElement = document.querySelector('.img-upload__effect-level');
-  var levelEffectValue = document.querySelector('.effect-level__value');
+  var levelEffectValueElement = document.querySelector('.effect-level__value');
 
   // Расчет эффекта от положения пина
   var getEffectValue = function (value) {
-    var EFFECT_SETTINGS = {
-      chrome: {
-        minValue: 0,
-        maxValue: 1
-      },
-
-      sepia: {
-        minValue: 0,
-        maxValue: 1
-      },
-
-      marvin: {
-        minValue: 0,
-        maxValue: 100
-      },
-
-      phobos: {
-        minValue: 0,
-        maxValue: 3
-      },
-
-      heat: {
-        minValue: 1,
-        maxValue: 3
-      }
-    };
     if (currentFilterName !== 'none') {
       var maxValue = EFFECT_SETTINGS[currentFilterName].maxValue;
       var minValue = EFFECT_SETTINGS[currentFilterName].minValue;
@@ -70,33 +71,29 @@
     return effectString;
   };
 
-  // Загрузка изображения и редактирование изображения
-  var editImage = function () {
-    var effectsListElement = document.querySelector('.effects__list');
-
-    // Накладываем эффекты на фото
-    var setEffectPreview = function (effectName) {
-
-      resetClassPreview();
-
-      if (effectName !== 'none') {
-        sliderElement.classList.remove('hidden');
-        currentFilterClassName = 'effects__preview--' + effectName;
-        imgPreviewElement.classList.add(currentFilterClassName);
-      } else {
-        sliderElement.classList.add('hidden');
-        currentFilterClassName = '';
-        imgPreviewElement.style.filter = '';
-      }
-    };
-
-    effectsListElement.addEventListener('change', function (evt) {
-      resetPreview();
-      currentFilterName = evt.target.value;
-      setEffectPreview(currentFilterName);
-    });
-
+  // Задает эффект при смене
+  var setEffectChange = function (evt) {
+    resetPreview();
+    currentFilterName = evt.target.value;
+    setEffectPreview(evt.target.value);
   };
+
+  // Накладываем эффекты на фото
+  var setEffectPreview = function (effectName) {
+
+    resetClassPreview();
+
+    if (effectName !== 'none') {
+      sliderElement.classList.remove('hidden');
+      currentFilterClassName = 'effects__preview--' + effectName;
+      imgPreviewElement.classList.add(currentFilterClassName);
+    } else {
+      sliderElement.classList.add('hidden');
+      currentFilterClassName = '';
+      imgPreviewElement.style.filter = '';
+    }
+  };
+
 
   // Сброс при переключении эффекта
   var resetPreview = function () {
@@ -105,7 +102,7 @@
     var levelDepthElement = levelLineElement.querySelector('.effect-level__depth');
     levelPinElement.style.left = '100%';
     levelDepthElement.style.width = '100%';
-    levelEffectValue.value = 100;
+    levelEffectValueElement.value = 100;
     imgPreviewElement.style = '';
   };
 
@@ -137,14 +134,13 @@
     imgPreviewElement.style.filter = stringLevelEffect;
 
     // Записываем значение в инпут
-    levelEffectValue.value = left;
+    levelEffectValueElement.value = left;
   };
 
   // Интерфейс модуля
   window.effects = {
-    editImage: editImage,
+    setEffectChange: setEffectChange,
     resetFormEdition: resetFormEdition,
     setEffect: setEffect,
-
   };
 })();

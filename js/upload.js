@@ -33,7 +33,7 @@
 
     var closeButtonElement = document.querySelector('.success__button');
 
-    closeButtonElement.addEventListener('click', closeWindowUploadSuccess);
+    closeButtonElement.addEventListener('click', onWindowUploadSuccessClose);
     mainElement.addEventListener('click', onSuccessWindowOutsideCLick);
     document.addEventListener('keydown', onFormEscPress);
   };
@@ -56,15 +56,15 @@
 
   // Закрытие формы успешной по ESC
   var onFormEscPress = function (evt) {
-    window.util.isEscEvent(evt, closeWindowUploadSuccess);
+    window.util.isEscEvent(evt, onWindowUploadSuccessClose);
   };
 
   // Обработчик закрытия успешной загрузки
-  var closeWindowUploadSuccess = function () {
+  var onWindowUploadSuccessClose = function () {
     var closeButtonElement = document.querySelector('.success__button');
 
     removeWindowSuccessUpload();
-    closeButtonElement.removeEventListener('click', closeWindowUploadSuccess);
+    closeButtonElement.removeEventListener('click', onWindowUploadSuccessClose);
   };
 
   // Окно ошибки загрузки фото
@@ -76,7 +76,7 @@
     renderWindowStatusUpload(errorUploadElement);
     var errorButtonElement = document.querySelector('.error__buttons');
 
-    errorButtonElement.addEventListener('click', closeWindowUploadError);
+    errorButtonElement.addEventListener('click', onWindowUploadErrorClose);
     mainElement.addEventListener('click', onErrorWindowOutsideCLick);
     document.addEventListener('keydown', onFormErrorEscPress);
   };
@@ -100,15 +100,15 @@
 
   // Закрытие формы ошибки по ESC
   var onFormErrorEscPress = function (evt) {
-    window.util.isEscEvent(evt, closeWindowUploadError);
+    window.util.isEscEvent(evt, onWindowUploadErrorClose);
   };
 
   // Обработчик закрытия окна ошибки
-  var closeWindowUploadError = function () {
+  var onWindowUploadErrorClose = function () {
     var errorButtonElement = document.querySelector('.error__buttons');
 
     removeWindowErrorUpload();
-    errorButtonElement.removeEventListener('click', closeWindowUploadError);
+    errorButtonElement.removeEventListener('click', onWindowUploadErrorClose);
   };
 
   // Отправка формы

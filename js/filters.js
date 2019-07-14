@@ -2,12 +2,12 @@
 (function () {
   // Фильтр по новым фотографиям
   var filterNew = function (data) {
-    var counterNewPhotos = 10;
+    var newPhotosCounter = 10;
     var newPhotos = data.slice();
     var filteredPhotos = [];
 
     // Получаем случайный массив фотографий
-    while (filteredPhotos.length < counterNewPhotos) {
+    while (filteredPhotos.length < newPhotosCounter) {
       var i = Math.floor(Math.random() * (newPhotos.length - 1));
       filteredPhotos.push(newPhotos[i]);
       newPhotos.splice(i, 1);
